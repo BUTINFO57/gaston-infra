@@ -5,6 +5,31 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
+## [1.0.1] — 2026-02-09
+
+### Corrigé
+
+- Résolution des 6 TODO documentaires (owner GitHub, contact sécurité, PBS NIC, IPs PROD, GLPI OS, Auth Container LDAP)
+- Harmonisation des IPs PVE dans tous les inventaires (.11/.12/.50)
+- Ajout newline en fin de .markdownlint.yml (yamllint)
+- Nettoyage de la référence TODO[006] résiduelle dans openvpn.md
+
+### Amélioré
+
+- README.md réécrit intégralement en français (parcours LAB/PROD, badges, structure)
+- SECURITY.md : politique via GitHub Security Advisories
+- docs/quickstart.md : guide de démarrage rapide en français
+- docs/index.md : registre des décisions techniques + références configs
+- docs/lab/overview.md : checklist express 30 min, table des simulations
+- docs/lab/single-host-proxmox.md : URLs ISO réelles, config 16 Go RAM
+- docs/prod/day0-runbook.md : tableau de rollback par phase
+- docs/prod/validation.md : résultats attendus (pvecm, samba, docker, curl, HA)
+
+### Ajouté
+
+- .markdownlint.yml, .markdownlint-cli2.jsonc, .yamllint.yml
+- 9 topics GitHub, 7 labels en français, protection branche main
+
 ## [1.0.0] — 2026-02-09
 
 ### Ajouté
