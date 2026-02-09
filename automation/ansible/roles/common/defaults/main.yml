@@ -1,0 +1,23 @@
+---
+# Rôle : common — variables par défaut
+domain: gaston.local
+dns_servers:
+  - "192.168.10.10"
+  - "192.168.10.9"
+timezone: Europe/Paris
+ntp_servers:
+  - "0.fr.pool.ntp.org"
+  - "1.fr.pool.ntp.org"
+
+base_packages:
+  - vim
+  - curl
+  - wget
+  - htop
+  - net-tools
+  - dnsutils
+  - gnupg
+  - ca-certificates
+  - chrony
+  - sudo
+  - bash-completion

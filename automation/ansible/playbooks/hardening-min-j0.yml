@@ -1,0 +1,19 @@
+---
+# =============================================================================
+# hardening-min-j0.yml — Durcissement minimal Jour-0
+# Source : Runbook §4.10
+# =============================================================================
+- name: Durcissement minimal (J0)
+  hosts: linux
+  become: true
+
+  vars:
+    ssh_port: 22
+    admin_network: "192.168.10.0/24"
+    monitoring_host: "192.168.10.114"
+    checkmk_port: 6556
+
+  roles:
+    - role: ../roles/ssh
+    - role: ../roles/ufw
+    - role: ../roles/fail2ban

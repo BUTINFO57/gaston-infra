@@ -1,0 +1,19 @@
+---
+# Rôle : fail2ban — Protection contre les attaques par force brute
+- name: Installer fail2ban
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+
+- name: Déployer jail.local
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    mode: "0644"
+  notify: redémarrer fail2ban
+
+- name: Activer fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true

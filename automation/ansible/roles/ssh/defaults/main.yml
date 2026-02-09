@@ -1,0 +1,12 @@
+---
+# Rôle : ssh — variables par défaut
+ssh_port: "22"
+ssh_permit_root_login: "prohibit-password"
+ssh_password_auth: "no"
+ssh_pubkey_auth: "yes"
+ssh_max_auth_tries: 3
+ssh_x11_forwarding: "no"
+ssh_allow_tcp_forwarding: "no"
+ssh_client_alive_interval: 300
+ssh_client_alive_count_max: 2
+ssh_login_grace_time: 30

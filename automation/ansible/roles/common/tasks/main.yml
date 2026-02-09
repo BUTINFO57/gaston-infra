@@ -1,0 +1,49 @@
+---
+# Rôle : common — configuration de base pour toutes les VMs Debian 12
+- name: Définir le fuseau horaire
+  community.general.timezone:
+    name: "{{ timezone | default('Europe/Paris') }}"
+
+- name: Mettre à jour /etc/hosts
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ ansible_host }}  {{ inventory_hostname }}.{{ domain }}  {{ inventory_hostname }}"
+    regexp: "^{{ ansible_host }}"
+    state: present
+
+- name: Configurer resolv.conf
+  ansible.builtin.template:
+    src: resolv.conf.j2
+    dest: /etc/resolv.conf
+    mode: "0644"
+
+- name: Installer les paquets de base
+  ansible.builtin.apt:
+    name:
+      - vim
+      - curl
+      - wget
+      - htop
+      - net-tools
+      - dnsutils
+      - gnupg
+      - ca-certificates
+      - chrony
+      - sudo
+      - bash-completion
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Configurer chrony
+  ansible.builtin.template:
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
+    mode: "0644"
+  notify: redémarrer chrony
+
+- name: Activer chrony
+  ansible.builtin.service:
+    name: chrony
+    state: started
+    enabled: true

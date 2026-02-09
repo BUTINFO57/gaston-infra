@@ -1,0 +1,50 @@
+---
+# Rôle : ssh — Durcissement SSH (en ligne, sans modèle externe)
+- name: Durcir sshd — PermitRootLogin
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin {{ ssh_permit_root_login }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — PasswordAuthentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication {{ ssh_password_auth }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — PubkeyAuthentication
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PubkeyAuthentication"
+    line: "PubkeyAuthentication {{ ssh_pubkey_auth }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — MaxAuthTries
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?MaxAuthTries"
+    line: "MaxAuthTries {{ ssh_max_auth_tries }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — X11Forwarding
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?X11Forwarding"
+    line: "X11Forwarding {{ ssh_x11_forwarding }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — ClientAliveInterval
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveInterval"
+    line: "ClientAliveInterval {{ ssh_client_alive_interval }}"
+  notify: redémarrer sshd
+
+- name: Durcir sshd — ClientAliveCountMax
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?ClientAliveCountMax"
+    line: "ClientAliveCountMax {{ ssh_client_alive_count_max }}"
+  notify: redémarrer sshd

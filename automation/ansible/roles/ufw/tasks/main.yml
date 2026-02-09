@@ -1,0 +1,36 @@
+---
+# Rôle : ufw — Configuration du pare-feu
+- name: Installer UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+
+- name: Définir la politique par défaut — refuser les entrées
+  community.general.ufw:
+    default: deny
+    direction: incoming
+
+- name: Définir la politique par défaut — autoriser les sorties
+  community.general.ufw:
+    default: allow
+    direction: outgoing
+
+- name: Autoriser SSH depuis le réseau admin
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ admin_network | default('192.168.10.0/24') }}"
+    port: "{{ ssh_port | default('22') }}"
+    proto: tcp
+    comment: "SSH Admin"
+
+- name: Autoriser l'agent Checkmk depuis l'hôte de monitoring
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ monitoring_host | default('192.168.10.114') }}"
+    port: "{{ checkmk_port | default('6556') }}"
+    proto: tcp
+    comment: "Agent Checkmk"
+
+- name: Activer UFW
+  community.general.ufw:
+    state: enabled

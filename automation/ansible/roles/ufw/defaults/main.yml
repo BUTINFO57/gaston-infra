@@ -1,0 +1,14 @@
+---
+# Rôle : ufw — variables par défaut
+ufw_default_incoming: deny
+ufw_default_outgoing: allow
+admin_network: "192.168.10.0/24"
+monitoring_host: "192.168.10.114"
+ssh_port: "22"
+checkmk_port: "6556"
+
+# Règles supplémentaires par hôte (surcharger dans inventory/group_vars)
+ufw_extra_rules: []
+# Exemple :
+# ufw_extra_rules:
+#   - { rule: allow, from_ip: "192.168.20.106", port: "80", proto: tcp, comment: "NGINX RP" }

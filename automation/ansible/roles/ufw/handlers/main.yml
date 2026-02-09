@@ -1,0 +1,4 @@
+---
+- name: recharger ufw
+  community.general.ufw:
+    state: reloaded

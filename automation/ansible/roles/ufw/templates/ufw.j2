@@ -1,0 +1,18 @@
+# Règles UFW gérées par Ansible
+# {{ ansible_managed }}
+
+# Politiques par défaut
+DEFAULT_INPUT_POLICY="{{ ufw_default_incoming | upper }}"
+DEFAULT_OUTPUT_POLICY="{{ ufw_default_outgoing | upper }}"
+DEFAULT_FORWARD_POLICY="DROP"
+
+# SSH depuis le réseau admin
+-A ufw-user-input -s {{ admin_network }} -p tcp --dport {{ ssh_port }} -j ACCEPT
+
+# Agent Checkmk depuis l'hôte de monitoring
+-A ufw-user-input -s {{ monitoring_host }} -p tcp --dport {{ checkmk_port }} -j ACCEPT
+
+{% for rule in ufw_extra_rules %}
+# {{ rule.comment | default('Règle personnalisée') }}
+-A ufw-user-input -s {{ rule.from_ip }} -p {{ rule.proto }} --dport {{ rule.port }} -j ACCEPT
+{% endfor %}
