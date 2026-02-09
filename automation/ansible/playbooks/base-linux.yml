@@ -1,0 +1,92 @@
+---
+# =============================================================================
+# base-linux.yml — Configuration commune pour toutes les VMs Debian 12
+# Source : Runbook §4.3 (post-installation commune)
+# =============================================================================
+- name: Configuration de base Linux
+  hosts: linux
+  become: true
+  vars:
+    ntp_servers:
+      - 0.fr.pool.ntp.org
+      - 1.fr.pool.ntp.org
+    dns_servers:
+      - 192.168.10.10
+      - 192.168.10.9
+    domain: gaston.local
+    timezone: Europe/Paris
+
+  tasks:
+    - name: Définir le fuseau horaire
+      community.general.timezone:
+        name: "{{ timezone }}"
+
+    - name: Définir le nom d'hôte
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Mettre à jour /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_host }}  {{ inventory_hostname }}.{{ domain }}  {{ inventory_hostname }}"
+        regexp: "^{{ ansible_host }}"
+        state: present
+
+    - name: Configurer resolv.conf
+      ansible.builtin.template:
+        src: ../roles/common/templates/resolv.conf.j2
+        dest: /etc/resolv.conf
+        mode: "0644"
+
+    - name: Mise à jour complète du système
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+
+    - name: Installer les paquets essentiels
+      ansible.builtin.apt:
+        name:
+          - vim
+          - curl
+          - wget
+          - htop
+          - net-tools
+          - dnsutils
+          - gnupg
+          - ca-certificates
+          - apt-transport-https
+          - chrony
+          - sudo
+          - bash-completion
+          - lsb-release
+        state: present
+
+    - name: Configurer chrony NTP
+      ansible.builtin.template:
+        src: ../roles/common/templates/chrony.conf.j2
+        dest: /etc/chrony/chrony.conf
+        mode: "0644"
+      notify: redémarrer chrony
+
+    - name: Activer chrony
+      ansible.builtin.service:
+        name: chrony
+        state: started
+        enabled: true
+
+    - name: Désactiver IPv6 (sysctl)
+      ansible.posix.sysctl:
+        name: "{{ item }}"
+        value: "1"
+        sysctl_file: /etc/sysctl.d/99-disable-ipv6.conf
+        reload: true
+      loop:
+        - net.ipv6.conf.all.disable_ipv6
+        - net.ipv6.conf.default.disable_ipv6
+
+  handlers:
+    - name: redémarrer chrony
+      ansible.builtin.service:
+        name: chrony
+        state: restarted
