@@ -1,0 +1,44 @@
+name: ✨ Demande de fonctionnalité
+description: Proposer une nouvelle fonctionnalité ou une amélioration.
+title: "[FEAT] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Décrivez la fonctionnalité souhaitée.
+      placeholder: "Ajouter un playbook Ansible pour les sauvegardes PBS automatisées..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Pourquoi est-ce utile ?
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implémentation suggérée
+      description: Comment l'implémenteriez-vous ?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Catégorie
+      options:
+        - Documentation
+        - Automatisation (Ansible)
+        - Automatisation (PowerShell)
+        - Modèle de configuration
+        - Guide LAB
+        - CI/CD
+        - Autre
+    validations:
+      required: true
