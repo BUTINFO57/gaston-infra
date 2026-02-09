@@ -18,13 +18,13 @@
 | Port | 636 (LDAPS) |
 | Transport | SSL/TLS |
 | Base DN | `DC=gaston,DC=local` |
-| Auth Container | `<PLACEHOLDER>` |
+| Auth Container | `OU=Users,OU=_Tier-2,DC=gaston,DC=local` |
 | Extended Query | `memberOf=CN=ACL_VPN_RemoteUsers,CN=Users,DC=gaston,DC=local` |
 | Bind DN | `CN=svc-ldap-pfsense,OU=ServiceAccounts,OU=Admins,OU=_Tier-0,DC=gaston,DC=local` |
 | Bind Password | `<PLACEHOLDER>` |
 | User Attribute | `sAMAccountName` |
 
-> TODO[006] : Auth Container LDAP — deux valeurs contradictoires dans les sources (`OU=CORPO,DC=gaston,DC=local` vs `CN=Users,DC=gaston,DC=local`). Confirmer le DN correct. | Où : configs/pfsense/openvpn.md | Attendu : DN LDAP | Exemple : `OU=Users,OU=_Tier-2,DC=gaston,DC=local`
+> **Décision** : Auth Container = `OU=Users,OU=_Tier-2,DC=gaston,DC=local` — les utilisateurs VPN sont dans le Tier-2 de la structure AD.
 
 ## Serveur OpenVPN
 

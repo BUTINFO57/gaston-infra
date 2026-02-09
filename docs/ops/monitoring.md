@@ -27,7 +27,7 @@
 | maria-prod01 | 192.168.20.105 | Linux Agent |
 | PBS | 192.168.30.100 | Linux Agent |
 
-> TODO[003]: Confirmer l'IP de PBS pour le monitoring (`.10.112` monitoring NIC vs `.30.100` data NIC) | Où: docs/ops/monitoring.md | Attendu: 1 IP | Exemple: `192.168.30.100`
+> **Décision :** PBS utilise `192.168.30.100` (VLAN 30). Le monitoring Checkmk atteint PBS via le routage pfSense VLAN 10 → VLAN 30
 
 ## Déployer un agent Linux
 
