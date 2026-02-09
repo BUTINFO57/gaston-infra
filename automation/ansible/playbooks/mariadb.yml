@@ -1,0 +1,82 @@
+---
+# =============================================================================
+# mariadb.yml — Déploiement MariaDB sur maria-prod01
+# Source : Runbook §4.8.1
+# =============================================================================
+- name: Déployer MariaDB
+  hosts: maria-prod01
+  become: true
+
+  vars:
+    mariadb_bind_address: "0.0.0.0"
+    wp_db_name: "wordpress_gaston"
+    wp_db_user: "wp_gaston"
+    wp_db_pass: "<PLACEHOLDER>"
+    wp_host: "192.168.20.108"
+    root_password: "<PLACEHOLDER>"
+
+  tasks:
+    - name: Installer MariaDB
+      ansible.builtin.apt:
+        name:
+          - mariadb-server
+          - mariadb-client
+          - python3-mysqldb
+        state: present
+        update_cache: true
+
+    - name: Démarrer MariaDB
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: true
+
+    - name: Définir le mot de passe root MariaDB
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ root_password }}"
+        host: localhost
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+      ignore_errors: true
+
+    - name: Créer la base de données WordPress
+      community.mysql.mysql_db:
+        name: "{{ wp_db_name }}"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Créer l'utilisateur BDD WordPress
+      community.mysql.mysql_user:
+        name: "{{ wp_db_user }}"
+        password: "{{ wp_db_pass }}"
+        host: "{{ wp_host }}"
+        priv: "{{ wp_db_name }}.*:ALL"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Configurer bind-address
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: "^bind-address"
+        line: "bind-address = {{ mariadb_bind_address }}"
+      notify: redémarrer mariadb
+
+    - name: Supprimer les utilisateurs anonymes
+      community.mysql.mysql_user:
+        name: ""
+        host_all: true
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Supprimer la base de données test
+      community.mysql.mysql_db:
+        name: test
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+  handlers:
+    - name: redémarrer mariadb
+      ansible.builtin.service:
+        name: mariadb
+        state: restarted

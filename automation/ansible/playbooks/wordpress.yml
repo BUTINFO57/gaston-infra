@@ -1,0 +1,87 @@
+---
+# =============================================================================
+# wordpress.yml — Déploiement WordPress sur web-wp01
+# Source : Runbook §4.8.2
+# =============================================================================
+- name: Déployer WordPress
+  hosts: web-wp01
+  become: true
+
+  vars:
+    wp_db_host: "192.168.20.105"
+    wp_db_name: "wordpress_gaston"
+    wp_db_user: "wp_gaston"
+    wp_db_pass: "<PLACEHOLDER>"
+    wp_site_url: "https://les-saveurs-de-gaston.fr"
+    wp_install_dir: "/var/www/html"
+    php_version: "8.2"
+
+  tasks:
+    - name: Installer Apache + PHP
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - "php{{ php_version }}"
+          - "php{{ php_version }}-mysql"
+          - "php{{ php_version }}-xml"
+          - "php{{ php_version }}-curl"
+          - "php{{ php_version }}-gd"
+          - "php{{ php_version }}-mbstring"
+          - "php{{ php_version }}-zip"
+          - "php{{ php_version }}-intl"
+          - "php{{ php_version }}-imagick"
+          - "libapache2-mod-php{{ php_version }}"
+          - unzip
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Télécharger WordPress
+      ansible.builtin.get_url:
+        url: https://wordpress.org/latest.tar.gz
+        dest: /tmp/wordpress.tar.gz
+        mode: "0644"
+
+    - name: Extraire WordPress
+      ansible.builtin.unarchive:
+        src: /tmp/wordpress.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: Copier WordPress vers la racine web
+      ansible.builtin.shell: |
+        cp -a /tmp/wordpress/* {{ wp_install_dir }}/
+        chown -R www-data:www-data {{ wp_install_dir }}
+      args:
+        creates: "{{ wp_install_dir }}/wp-config-sample.php"
+
+    - name: Créer wp-config.php
+      ansible.builtin.template:
+        src: templates/wp-config.php.j2
+        dest: "{{ wp_install_dir }}/wp-config.php"
+        owner: www-data
+        group: www-data
+        mode: "0640"
+
+    - name: Activer le module rewrite d'Apache
+      community.general.apache2_module:
+        name: rewrite
+        state: present
+      notify: redémarrer apache
+
+    - name: Supprimer index.html par défaut
+      ansible.builtin.file:
+        path: "{{ wp_install_dir }}/index.html"
+        state: absent
+
+    - name: S'assurer qu'Apache est en cours d'exécution
+      ansible.builtin.service:
+        name: apache2
+        state: started
+        enabled: true
+
+  handlers:
+    - name: redémarrer apache
+      ansible.builtin.service:
+        name: apache2
+        state: restarted
