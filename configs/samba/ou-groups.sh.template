@@ -1,0 +1,94 @@
+#!/bin/bash
+# =============================================================================
+# Samba AD — Structure des UO + Groupes (Modèle AGDLP)
+# Modèle — adapter les noms de groupes et UO selon les besoins
+# Source : Runbook §4.4.4, §4.4.5, Rapport AD
+# =============================================================================
+set -euo pipefail
+
+DOMAIN_DN="DC=gaston,DC=local"
+
+echo "=== Création de la structure des UO ==="
+
+# --- Tier-0 (Administration) ---
+samba-tool ou create "OU=_Tier-0,${DOMAIN_DN}"
+samba-tool ou create "OU=Admins,OU=_Tier-0,${DOMAIN_DN}"
+samba-tool ou create "OU=ServiceAccounts,OU=_Tier-0,${DOMAIN_DN}"
+
+# --- Tier-1 (Serveurs) ---
+samba-tool ou create "OU=_Tier-1,${DOMAIN_DN}"
+samba-tool ou create "OU=Servers,OU=_Tier-1,${DOMAIN_DN}"
+
+# --- Tier-2 (Utilisateurs / Postes de travail) ---
+samba-tool ou create "OU=_Tier-2,${DOMAIN_DN}"
+samba-tool ou create "OU=Users,OU=_Tier-2,${DOMAIN_DN}"
+samba-tool ou create "OU=Workstations,OU=_Tier-2,${DOMAIN_DN}"
+samba-tool ou create "OU=Groups,OU=_Tier-2,${DOMAIN_DN}"
+
+# --- UO Entreprise (contient les départements) ---
+samba-tool ou create "OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Direction,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Comptabilite,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=RH,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Production,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Vente,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Marketing,OU=CORPO,${DOMAIN_DN}"
+samba-tool ou create "OU=Logistique,OU=CORPO,${DOMAIN_DN}"
+
+echo ""
+echo "=== Création des groupes globaux (GG_) ==="
+
+# Groupes globaux — par département
+samba-tool group add GG_Direction
+samba-tool group add GG_Comptabilite
+samba-tool group add GG_RH
+samba-tool group add GG_Production
+samba-tool group add GG_Vente
+samba-tool group add GG_Marketing
+samba-tool group add GG_Logistique
+samba-tool group add GG_IT
+
+echo ""
+echo "=== Création des groupes de domaine local (DL_) ==="
+
+# Groupes de domaine local — par permission de partage
+samba-tool group add DL_Direction_RW
+samba-tool group add DL_Direction_RO
+samba-tool group add DL_Comptabilite_RW
+samba-tool group add DL_Comptabilite_RO
+samba-tool group add DL_RH_RW
+samba-tool group add DL_RH_RO
+samba-tool group add DL_Production_RW
+samba-tool group add DL_Production_RO
+samba-tool group add DL_Vente_RW
+samba-tool group add DL_Vente_RO
+samba-tool group add DL_Marketing_RW
+samba-tool group add DL_Marketing_RO
+samba-tool group add DL_Logistique_RW
+samba-tool group add DL_Logistique_RO
+samba-tool group add DL_Commun_RW
+
+# Groupes ACL
+samba-tool group add ACL_VPN_RemoteUsers
+samba-tool group add ACL_RDP_Users
+samba-tool group add ACL_Mail_Users
+
+echo ""
+echo "=== Imbrication AGDLP ==="
+
+# Utilisateurs → GG_ → DL_ → ACL sur la ressource
+samba-tool group addmembers DL_Direction_RW     GG_Direction
+samba-tool group addmembers DL_Comptabilite_RW  GG_Comptabilite
+samba-tool group addmembers DL_RH_RW            GG_RH
+samba-tool group addmembers DL_Production_RW    GG_Production
+samba-tool group addmembers DL_Vente_RW         GG_Vente
+samba-tool group addmembers DL_Marketing_RW     GG_Marketing
+samba-tool group addmembers DL_Logistique_RW    GG_Logistique
+samba-tool group addmembers DL_Commun_RW        GG_Direction,GG_Comptabilite,GG_RH,GG_Production,GG_Vente,GG_Marketing,GG_Logistique,GG_IT
+
+echo ""
+echo "=== Vérification ==="
+samba-tool ou list "${DOMAIN_DN}" | head -20
+samba-tool group list | sort
+echo ""
+echo "✅ Structure des UO et groupes AGDLP créés."

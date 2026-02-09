@@ -1,0 +1,67 @@
+#!/bin/bash
+# =============================================================================
+# Provisionnement du domaine Samba AD — ad-dc01
+# Modèle — remplacer <PLACEHOLDER> avant utilisation
+# Source : Runbook §4.4.2
+# =============================================================================
+set -euo pipefail
+
+DOMAIN="gaston.local"
+REALM="GASTON.LOCAL"
+ADMIN_PASS="<PLACEHOLDER_ADMIN_PASSWORD>"
+FORWARDER="1.1.1.1"
+
+echo "=== Provisionnement Samba AD — ${DOMAIN} ==="
+
+# --- 1. Définir le nom d'hôte ---
+hostnamectl set-hostname ad-dc01
+echo "192.168.10.10  ad-dc01.${DOMAIN}  ad-dc01" >> /etc/hosts
+
+# --- 2. Installer Samba + dépendances ---
+apt update && apt install -y \
+  samba smbclient winbind krb5-user libnss-winbind \
+  libpam-winbind acl attr dnsutils net-tools
+
+# --- 3. Arrêter et désactiver les services ---
+systemctl stop smbd nmbd winbind
+systemctl disable smbd nmbd winbind
+
+# --- 4. Sauvegarder la configuration d'origine ---
+[ -f /etc/samba/smb.conf ] && mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+# --- 5. Provisionner le domaine ---
+samba-tool domain provision \
+  --use-rfc2307 \
+  --realm="${REALM}" \
+  --domain="GASTON" \
+  --server-role=dc \
+  --dns-backend=SAMBA_INTERNAL \
+  --adminpass="${ADMIN_PASS}"
+
+# --- 6. Configurer Kerberos ---
+cp /var/lib/samba/private/krb5.conf /etc/krb5.conf
+
+# --- 7. Configurer le redirecteur DNS ---
+sed -i "s/dns forwarder = .*/dns forwarder = ${FORWARDER}/" /etc/samba/smb.conf
+
+# --- 8. Activer le service samba-ad-dc ---
+systemctl unmask samba-ad-dc
+systemctl enable samba-ad-dc
+systemctl start samba-ad-dc
+
+# --- 9. Vérification ---
+echo ""
+echo "=== Vérification ==="
+samba-tool domain info 127.0.0.1
+samba-tool user list
+host -t A ${DOMAIN} 127.0.0.1
+host -t SRV _ldap._tcp.${DOMAIN} 127.0.0.1
+
+echo ""
+echo "✅ AD-DC01 provisionné avec succès."
+echo ""
+echo "Étapes suivantes :"
+echo "  1. Changer le DNS dans /etc/resolv.conf vers 127.0.0.1"
+echo "  2. Configurer NTP (chrony)"
+echo "  3. Provisionner AD-DC02 en réplica"
+echo "  4. Créer les UO et groupes (voir ou-groups.sh.template)"
