@@ -1,0 +1,97 @@
+---
+# =============================================================================
+# mailcow.yml — Déploiement Mailcow-dockerized
+# Source : Runbook §4.7
+# =============================================================================
+- name: Déployer Mailcow
+  hosts: mail
+  become: true
+
+  vars:
+    mailcow_hostname: mail.gaston.local
+    mailcow_install_dir: /opt/mailcow-dockerized
+    mailcow_timezone: Europe/Paris
+
+  tasks:
+    - name: Installer les prérequis Docker
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: true
+
+    - name: Ajouter la clé GPG Docker
+      ansible.builtin.apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+
+    - name: Ajouter le dépôt Docker
+      ansible.builtin.apt_repository:
+        repo: "deb https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: Activer Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Cloner Mailcow
+      ansible.builtin.git:
+        repo: https://github.com/mailcow/mailcow-dockerized
+        dest: "{{ mailcow_install_dir }}"
+        version: master
+
+    - name: Générer la configuration Mailcow
+      ansible.builtin.shell: |
+        cd {{ mailcow_install_dir }}
+        echo "{{ mailcow_hostname }}" | ./generate_config.sh
+      args:
+        creates: "{{ mailcow_install_dir }}/mailcow.conf"
+
+    - name: Définir le fuseau horaire dans mailcow.conf
+      ansible.builtin.lineinfile:
+        path: "{{ mailcow_install_dir }}/mailcow.conf"
+        regexp: "^TZ="
+        line: "TZ={{ mailcow_timezone }}"
+
+    - name: Démarrer les conteneurs Mailcow
+      ansible.builtin.shell: |
+        cd {{ mailcow_install_dir }}
+        docker compose pull
+        docker compose up -d
+      args:
+        chdir: "{{ mailcow_install_dir }}"
+
+    - name: Attendre que Mailcow soit prêt
+      ansible.builtin.uri:
+        url: "https://{{ mailcow_hostname }}"
+        validate_certs: false
+        status_code: 200
+      register: result
+      retries: 12
+      delay: 10
+      until: result.status == 200
+      ignore_errors: true
+
+    - name: Afficher les informations d'accès
+      ansible.builtin.debug:
+        msg: |
+          Mailcow déployé.
+          URL : https://{{ mailcow_hostname }}
+          Identifiants par défaut : admin / moohoo
+          ⚠️  Changez le mot de passe par défaut immédiatement !

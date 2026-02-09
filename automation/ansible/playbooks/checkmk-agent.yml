@@ -1,0 +1,54 @@
+---
+# =============================================================================
+# checkmk-agent.yml — Déployer l'agent Checkmk sur tous les hôtes Linux
+# Source : Runbook §4.9
+# =============================================================================
+- name: Déployer l'agent Checkmk
+  hosts: linux
+  become: true
+
+  vars:
+    checkmk_server: "192.168.10.114"
+    checkmk_site: "gaston"
+    checkmk_port: 6556
+    # URL de téléchargement — ajuster la version si nécessaire
+    checkmk_agent_url: "http://{{ checkmk_server }}/{{ checkmk_site }}/check_mk/agents/check-mk-agent_2.4.0-1_all.deb"
+
+  tasks:
+    - name: Télécharger l'agent Checkmk
+      ansible.builtin.get_url:
+        url: "{{ checkmk_agent_url }}"
+        dest: /tmp/check-mk-agent.deb
+        mode: "0644"
+      ignore_errors: true
+
+    - name: Installer l'agent Checkmk
+      ansible.builtin.apt:
+        deb: /tmp/check-mk-agent.deb
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: S'assurer que le socket xinetd ou systemd est actif
+      ansible.builtin.service:
+        name: "check-mk-agent.socket"
+        state: started
+        enabled: true
+      ignore_errors: true
+
+    - name: Autoriser le port Checkmk dans UFW
+      community.general.ufw:
+        rule: allow
+        from_ip: "{{ checkmk_server }}"
+        port: "{{ checkmk_port }}"
+        proto: tcp
+        comment: "Agent Checkmk"
+      when: "'ufw' in ansible_facts.packages"
+
+    - name: Vérifier que l'agent répond
+      ansible.builtin.shell: "check_mk_agent | head -5"
+      register: agent_check
+      changed_when: false
+
+    - name: Afficher la sortie de l'agent
+      ansible.builtin.debug:
+        var: agent_check.stdout_lines
