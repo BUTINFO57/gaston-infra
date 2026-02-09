@@ -1,0 +1,53 @@
+# Inventaire PROD — cluster Proxmox 3 nœuds
+# Copier vers prod.ini et modifier les valeurs
+
+[pve]
+pve1 ansible_host=192.168.10.116
+pve2 ansible_host=192.168.10.117
+pve3 ansible_host=192.168.10.118
+
+[domain_controllers]
+ad-dc01 ansible_host=192.168.10.10
+ad-dc02 ansible_host=192.168.10.9
+
+[fileserver]
+fs01 ansible_host=192.168.10.111 ansible_connection=winrm ansible_winrm_transport=ntlm
+
+[mail]
+mail01 ansible_host=192.168.10.115
+
+[monitoring]
+mon01 ansible_host=192.168.10.114
+
+[web]
+rp-prod01    ansible_host=192.168.20.106
+web-wp01     ansible_host=192.168.20.108
+maria-prod01 ansible_host=192.168.20.105
+
+[backup]
+pbs01 ansible_host=192.168.30.100
+
+[glpi]
+glpi01 ansible_host=192.168.10.122
+
+[linux:children]
+domain_controllers
+mail
+monitoring
+web
+backup
+glpi
+
+[linux:vars]
+ansible_user=root
+ansible_python_interpreter=/usr/bin/python3
+
+[windows:children]
+fileserver
+
+[windows:vars]
+ansible_user=Administrator
+ansible_password=<PLACEHOLDER>
+ansible_port=5986
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
