@@ -1,13 +1,11 @@
-# ⚡ Quickstart — Démarrer en 5 minutes
+# ⚡ Démarrage rapide — 5 minutes
 
-## 1. Cloner le repo
+## 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/TODO-OWNER/gaston-infra.git
+git clone https://github.com/butinfoia-alt/gaston-infra.git
 cd gaston-infra
 ```
-
-> TODO[001]: Remplacer `TODO-OWNER` par le nom GitHub réel.
 
 ## 2. Choisir votre parcours
 
@@ -19,35 +17,35 @@ cd gaston-infra
 - Proxmox installé (ou à installer)
 - VLANs virtuels via bridges
 - Pas de HA réel, même architecture logique
-- **Temps : ~4 h**
+- **Temps : ≈ 4 h**
 
-### 🏭 J'ai 3 serveurs + switch + pfSense box
+### 🏭 J'ai 3 serveurs + switch + pfSense
 
 ➡️ **[Guide PROD](prod/overview.md)**
 
 - 3 serveurs physiques (HP DL360 Gen10+ ou équivalent)
-- 1 PC dédié pfSense (2 NIC minimum)
+- 1 PC dédié pfSense (2 cartes réseau minimum)
 - 1 switch Cisco SG350-28
-- **Temps : ~10 h (1 journée)**
+- **Temps : ≈ 10 h (1 journée)**
 
 ## 3. Préparer les secrets
 
 ```bash
 cp examples/secrets.env.example .env
 # Éditer .env avec vos mots de passe réels
-# NE JAMAIS COMMIT ce fichier
+# NE JAMAIS commiter ce fichier
 ```
 
 ## 4. Vérifier les prérequis
 
 | Prérequis | LAB | PROD |
 |:----------|:---:|:----:|
-| Proxmox VE 9.0 ISO | ✅ | ✅ |
-| Debian 12/13 ISO | ✅ | ✅ |
-| pfSense CE 24.0 ISO | ✅ | ✅ |
-| Windows Server 2022 ISO | ✅ | ✅ |
+| ISO Proxmox VE 9.0 | ✅ | ✅ |
+| ISO Debian 12/13 | ✅ | ✅ |
+| ISO pfSense CE 24.0 | ✅ | ✅ |
+| ISO Windows Server 2022 | ✅ | ✅ |
 | 16+ Go RAM | ✅ | ✅ (par serveur) |
-| 2 NIC sur pfSense box | ❌ (VM) | ✅ |
+| 2 cartes réseau sur pfSense | ❌ (VM) | ✅ |
 | Switch managé | ❌ (bridges) | ✅ |
 
 ## 5. Suivre le runbook

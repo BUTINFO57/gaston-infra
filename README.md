@@ -3,21 +3,36 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-![License](https://img.shields.io/github/license/TODO-OWNER/gaston-infra?style=flat-square)
-![CI](https://img.shields.io/github/actions/workflow/status/TODO-OWNER/gaston-infra/ci.yml?label=CI&style=flat-square)
-![Markdown](https://img.shields.io/github/actions/workflow/status/TODO-OWNER/gaston-infra/lint.yml?label=lint&style=flat-square)
+![Licence](https://img.shields.io/github/license/butinfoia-alt/gaston-infra?style=flat-square)
+![CI](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/ci.yml?label=CI&style=flat-square)
+![Lint](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/lint.yml?label=lint&style=flat-square)
 
-**Projet SAE — Déploiement d'une infrastructure enterprise-grade pour une PME**
+**Projet SAÉ — Déploiement d'une infrastructure entreprise pour une PME (boulangerie-pâtisserie)**
+
 Réseau segmenté · Virtualisation HA · Identité centralisée · Site web 3-tiers · Sauvegarde chiffrée
 
 </div>
 <!-- markdownlint-enable MD033 MD041 -->
 
-> TODO[001]: Remplacer `TODO-OWNER` par le nom GitHub réel | Où: README.md#badges | Attendu: `owner/gaston-infra` | Exemple: `mathieu-dupont/gaston-infra`
+---
+
+## 📋 C'est quoi ?
+
+Un dépôt **Infrastructure-as-Code** complet pour déployer l'infrastructure IT d'une PME
+(*Les Saveurs de Gaston*, ~150 postes) **en une journée**.
+
+Il contient : documentation d'architecture, runbooks pas-à-pas, playbooks Ansible,
+scripts PowerShell, modèles de configuration et outils de validation.
+
+## 👤 Pour qui ?
+
+- **Étudiants** — reproduire l'architecture en LAB sur 1 seul PC
+- **Techniciens** — déployer en PROD avec le runbook copier-coller
+- **Formateurs** — base pédagogique pour l'enseignement réseau/système
 
 ---
 
-## ⚡ What You Get
+## ⚡ Ce que ça déploie
 
 | Bloc | Technologies | Résultat |
 |:-----|:-------------|:---------|
@@ -25,103 +40,117 @@ Réseau segmenté · Virtualisation HA · Identité centralisée · Site web 3-t
 | 🖥️ Virtualisation | Proxmox VE 9.0 · 3 nœuds cluster | HA Manager, RTO < 90 s, NFS v4.2 |
 | 🔐 Identité | Samba AD (2 DC) · Kerberos · AGDLP | Tiering Tier-0/1/2, ~150 comptes |
 | 📂 Fichiers | Windows Server 2022 Core (FS01) | 7 partages SMB 3.1.1, RBAC NTFS |
-| 📧 Messagerie | Mailcow Dockerized | Postfix+Dovecot+SOGo+Rspamd (15 containers) |
+| 📧 Messagerie | Mailcow Dockerized | Postfix+Dovecot+SOGo+Rspamd (15 conteneurs) |
 | 📡 Supervision | Checkmk Raw 2.4 | 12 hôtes, agents TLS |
 | 💾 Sauvegarde | PBS v3 (VLAN isolé) | AES-256-GCM, ZSTD, dédup 70-90 % |
 | 🌐 Site web | NGINX + WordPress + MariaDB | Architecture 3-tiers, `/wp-admin` filtré |
 
 ---
 
-## 🚀 Two Paths
+## 🚀 Deux parcours de déploiement
 
-### 🧪 LAB — Single Host (30 min setup → deploy)
+### 🧪 LAB — un seul PC (≈ 4 h)
 
-> Tout sur **1 seul PC/serveur** avec Proxmox. Pas de HA réel, même architecture logique.
+> Tout sur **1 machine** avec Proxmox. Pas de HA réel, même architecture logique.
 
 ```text
-You need: 1 machine (16+ Go RAM, 256+ Go SSD), 1 NIC
-Result:   Même stack complète, VLANs virtuels, pas de cluster HA
+Prérequis : 1 machine (16+ Go RAM, 256+ Go SSD), 1 carte réseau
+Résultat  : stack complète, VLANs virtuels (bridges), pas de cluster HA
 ```
 
-➡️ **[Start here → docs/lab/overview.md](docs/lab/overview.md)**
+➡️ **[Commencer ici → docs/lab/overview.md](docs/lab/overview.md)**
 
-### 🏭 PROD — 3 Nodes (full day deploy)
+### 🏭 PROD — 3 serveurs (≈ 1 journée)
 
 > Déploiement conforme au runbook : 3 serveurs + switch + pfSense dédié.
 
 ```text
-You need: 3 servers, 1 pfSense box (2 NIC), 1 switch SG350-28
-Result:   Cluster HA 3 nœuds, quorum natif, failover auto < 90 s
+Prérequis : 3 serveurs, 1 PC pfSense (2 cartes réseau), 1 switch SG350-28
+Résultat  : cluster HA 3 nœuds, quorum natif, failover auto < 90 s
 ```
 
-➡️ **[Start here → docs/prod/overview.md](docs/prod/overview.md)**
+➡️ **[Commencer ici → docs/prod/overview.md](docs/prod/overview.md)**
 
 ---
 
-## 📋 One-Day Checklist
+## 🗓️ Planning type J0 (PROD)
 
 | Heure | Bloc | Guide | Durée |
 |:-----:|:-----|:------|:-----:|
-| 08:00 | 🔀 Switch + pfSense base install | [§4.1–4.2](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#41-switch-cisco-sg350-28) | 1 h 30 |
-| 09:30 | 🖥️ Proxmox cluster + NFS | [§4.3](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#43-cluster-proxmox-ve) | 1 h 45 |
-| 11:15 | ⚡ **GO/NO-GO** checkpoint | [§3](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#3-plan-dexécution-sur-1-journée) | 15 min |
-| 11:30 | 🔐 Samba AD DC01+DC02 | [§4.4](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#44-samba-ad-dc1--dc2) | 1 h 15 |
-| 12:45 | 📂📧 FS01 + Mailcow | [§4.5](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#45-services-socle) | 1 h 15 |
-| 14:00 | 📡💾 Checkmk + PBS | [§4.6–4.7](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#46-supervision--mon-01-checkmk) | 1 h 20 |
-| 15:20 | 🌐 Web 3-tiers | [§4.8](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) | 1 h 00 |
-| 16:20 | 🛡️ Sécurité J0 + recette | [§5–6](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#5-sécurité-minimale-j0) | 1 h 00 |
-| 17:20 | ✅ **MVP Opérationnel** | | |
+| 08:00 | 🔀 Switch + pfSense | §4.1–4.2 | 1 h 30 |
+| 09:30 | 🖥️ Cluster Proxmox + NFS | §4.3 | 1 h 45 |
+| 11:15 | ⚡ **GO/NO-GO** | §3 | 15 min |
+| 11:30 | 🔐 Samba AD DC01+DC02 | §4.4 | 1 h 15 |
+| 12:45 | 📂📧 FS01 + Mailcow | §4.5 | 1 h 15 |
+| 14:00 | 📡💾 Checkmk + PBS | §4.6–4.7 | 1 h 20 |
+| 15:20 | 🌐 Web 3-tiers | §4.8 | 1 h 00 |
+| 16:20 | 🛡️ Sécurité J0 + recette | §5–6 | 1 h 00 |
+| 17:20 | ✅ **MVP opérationnel** | | |
 
-➡️ **[Full runbook](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)** · **[20-min exec checklist](runbooks/RUNBOOK-EXEC-20MIN.md)**
+➡️ **[Runbook complet](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)** · **[Checklist exécutive 20 min](runbooks/RUNBOOK-EXEC-20MIN.md)**
 
 ---
 
-## 📂 Repository Structure
+## 🗺️ Navigation rapide
+
+| Je veux… | Aller à |
+|:---------|:--------|
+| Comprendre l'architecture | [docs/architecture/diagrams.md](docs/architecture/diagrams.md) |
+| Voir le plan IP / VLANs | [docs/architecture/ip-plan.md](docs/architecture/ip-plan.md) |
+| Déployer en LAB (1 PC) | [docs/lab/overview.md](docs/lab/overview.md) |
+| Déployer en PROD (3 serveurs) | [docs/prod/overview.md](docs/prod/overview.md) |
+| Opérer (backup/monitoring/rollback) | [docs/ops/](docs/ops/) |
+| Lancer l'automatisation Ansible | [automation/ansible/README.md](automation/ansible/README.md) |
+| Voir les modèles de config | [configs/](configs/) |
+
+---
+
+## 📂 Structure du dépôt
 
 ```text
 gaston-infra/
 ├── docs/                          # Documentation
-│   ├── quickstart.md              # Get started in 5 min
-│   ├── lab/                       # Single-host lab guide
-│   ├── prod/                      # 3-node production guide
-│   ├── ops/                       # Operations (backup, monitoring, rollback)
-│   └── architecture/              # Diagrams, IP plan, flows
-├── runbooks/                      # Executable runbooks
+│   ├── quickstart.md              # Démarrer en 5 min
+│   ├── lab/                       # Guide LAB mono-hôte
+│   ├── prod/                      # Guide PROD 3 nœuds
+│   ├── ops/                       # Opérations (backup, monitoring, rollback)
+│   └── architecture/              # Diagrammes, plan IP, flux
+├── runbooks/                      # Runbooks exécutables
 │   ├── RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md
 │   └── RUNBOOK-EXEC-20MIN.md
-├── configs/                       # Configuration templates
-│   ├── nginx/                     # NGINX reverse proxy
-│   ├── ufw/                       # UFW firewall rules
-│   ├── pfsense/                   # pfSense documentation
-│   └── samba/                     # Samba AD provisioning
-├── automation/                    # Deployment automation
-│   ├── ansible/                   # Ansible playbooks & roles
-│   └── powershell/                # FS01 PowerShell scripts
-├── tools/                         # Validation scripts
-├── examples/                      # Example configs (no secrets)
-└── .github/                       # CI/CD + templates
+├── configs/                       # Modèles de configuration
+│   ├── nginx/                     # Reverse proxy NGINX
+│   ├── ufw/                       # Règles pare-feu UFW
+│   ├── pfsense/                   # Documentation pfSense
+│   └── samba/                     # Provisionnement Samba AD
+├── automation/                    # Automatisation du déploiement
+│   ├── ansible/                   # Playbooks et rôles Ansible
+│   └── powershell/                # Scripts PowerShell FS01
+├── tools/                         # Scripts de validation
+├── examples/                      # Fichiers d'exemple (sans secrets)
+└── .github/                       # CI/CD + modèles
 ```
 
 ---
 
-## ⚠️ Public Repository Notice
+## ⚠️ Dépôt public — Aucun secret
 
-This repository is **public**. It does **not** contain:
+Ce dépôt est **public**. Il ne contient **aucun** :
 
-- ❌ Real passwords, API keys, or secrets
-- ❌ Production credentials or private IPs
-- ❌ Customer or employee personal data
+- ❌ Mot de passe, clé API ou token réel
+- ❌ Identifiant de production ou IP publique
+- ❌ Donnée personnelle (noms, emails, téléphones)
 
-All sensitive values use `<PLACEHOLDER>` markers and `.example` files.
-See [SECURITY.md](SECURITY.md) for the security policy.
+Toutes les valeurs sensibles utilisent des marqueurs `<PLACEHOLDER>` et des fichiers `.example`.
+Voir [SECURITY.md](SECURITY.md) pour la politique de sécurité.
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contribuer
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les consignes.
+Ce projet suit le [Code de Conduite Contributor Covenant](CODE_OF_CONDUCT.md).
 
-## 📜 License
+## 📜 Licence
 
-[MIT](LICENSE) — See [LICENSE](LICENSE) for details.
+MIT — Voir [LICENSE](LICENSE) pour les détails.
