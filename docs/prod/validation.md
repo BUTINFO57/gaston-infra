@@ -118,3 +118,90 @@ pvecm status          # Quorate: Yes, 3/3
 ha-manager status     # 8 VMs listées
 pvesm status          # ha-nfs actif sur 3 nœuds
 ```
+
+## Résultats attendus — Aide au diagnostic
+
+### pvecm status — sortie attendue
+
+```text
+Cluster information
+-------------------
+Name:             gaston-cluster
+Config Version:   3
+Transport:        knet
+Secure auth:      on
+
+Quorum information
+------------------
+Date:             <date>
+Quorum provider:  corosync_votequorum
+Nodes:            3
+Node ID:          0x00000001
+Ring ID:          1.xxx
+Quorate:          Yes
+
+Votequorum information
+----------------------
+Expected votes:   3
+Highest expected: 3
+Total votes:      3
+Quorum:           2
+```
+
+### samba-tool domain info — sortie attendue
+
+```text
+Forest           : gaston.local
+Domain           : gaston.local
+Netbios domain   : GASTON
+DC name          : ad-dc01.gaston.local
+DC netbios name  : AD-DC01
+Server site      : Default-First-Site-Name
+Client site      : Default-First-Site-Name
+```
+
+### docker compose ps (Mailcow) — sortie attendue
+
+Les 15 containers doivent être `Up` :
+
+```text
+NAME                      STATUS
+mailcowdockerized-acme    Up
+mailcowdockerized-clamd   Up
+mailcowdockerized-dovecot Up
+mailcowdockerized-memcached Up
+mailcowdockerized-mysql   Up
+mailcowdockerized-nginx   Up
+mailcowdockerized-olefy   Up
+mailcowdockerized-php-fpm Up
+mailcowdockerized-postfix Up
+mailcowdockerized-redis   Up
+mailcowdockerized-rspamd  Up
+mailcowdockerized-sogo    Up
+mailcowdockerized-solr    Up
+mailcowdockerized-unbound Up
+mailcowdockerized-watchdog Up
+```
+
+### curl site web — sortie attendue
+
+```text
+HTTP/1.1 200 OK
+Server: nginx
+Content-Type: text/html; charset=UTF-8
+X-Powered-By: PHP/8.2
+```
+
+### ha-manager status — sortie attendue
+
+```text
+quorum OK
+ad-dc01: started on pve01
+ad-dc02: started on pve02
+fs01: started on pve01
+mail-01: started on pve02
+mon-01: started on pve01
+maria-prod01: started on pve03
+web-wp01: started on pve03
+rp-prod01: started on pve03
+```
