@@ -1,0 +1,26 @@
+# =============================================================================
+# hosts.example — Entrées /etc/hosts pour tous les hôtes de l'infrastructure
+# Ajouter à votre machine locale ou DNS pour la résolution de noms
+# =============================================================================
+
+# --- Passerelle ---
+192.168.10.1    pfsense.gaston.local    pfsense
+
+# --- VLAN 10 — Admin/Infra ---
+192.168.10.9    ad-dc02.gaston.local    ad-dc02
+192.168.10.10   ad-dc01.gaston.local    ad-dc01
+192.168.10.111  fs01.gaston.local       fs01
+192.168.10.114  mon01.gaston.local      mon01       checkmk
+192.168.10.115  mail01.gaston.local     mail01      mail
+192.168.10.116  pve1.gaston.local       pve1
+192.168.10.117  pve2.gaston.local       pve2
+192.168.10.118  pve3.gaston.local       pve3
+192.168.10.122  glpi.gaston.local       glpi
+
+# --- VLAN 20 — Production ---
+192.168.20.105  maria-prod01.gaston.local   maria-prod01    db
+192.168.20.106  rp-prod01.gaston.local      rp-prod01       rp
+192.168.20.108  web-wp01.gaston.local       web-wp01        wp
+
+# --- VLAN 30 — Backup ---
+192.168.30.100  pbs01.gaston.local      pbs01       pbs
