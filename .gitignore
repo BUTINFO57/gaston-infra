@@ -1,0 +1,39 @@
+# gaston-infra
+
+## OS & temp files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Secrets — NEVER commit
+.env
+*.env
+!*.env.example
+secrets/
+vault.yml
+*.key
+*.pem
+*.crt
+!*.example
+
+## Ansible
+*.retry
+.ansible/
+
+## IDE
+.vscode/
+.idea/
+*.code-workspace
+
+## Build artifacts
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+
+## Rendered docs
+site/
