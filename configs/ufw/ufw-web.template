@@ -1,0 +1,27 @@
+# Règles UFW — VMs Web (rp-prod01, web-wp01)
+# Modèle — adapter par hôte
+#
+# Utilisation :
+#   Copier la section concernée et exécuter les commandes sur l'hôte cible.
+
+# --- Base commune ---
+ufw default deny incoming
+ufw default allow outgoing
+
+# --- Spécifique rp-prod01 ---
+ufw allow 443/tcp comment "HTTPS"
+ufw allow 80/tcp comment "Redirection HTTP"
+ufw allow from ${ADMIN_NETWORK} to any port 22 proto tcp comment "SSH Admin"
+ufw allow from ${MONITORING_HOST} to any port 6556 proto tcp comment "Agent Checkmk"
+
+# --- Spécifique web-wp01 ---
+# ufw allow from ${RP_HOST} to any port 80 proto tcp comment "NGINX RP"
+# ufw allow from ${ADMIN_NETWORK} to any port 22 proto tcp comment "SSH Admin"
+# ufw allow from ${MONITORING_HOST} to any port 6556 proto tcp comment "Agent Checkmk"
+
+ufw enable
+
+# --- Référence des variables ---
+# ADMIN_NETWORK   = 192.168.10.0/24
+# MONITORING_HOST = 192.168.10.114
+# RP_HOST         = 192.168.20.106
