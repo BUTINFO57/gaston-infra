@@ -1,0 +1,101 @@
+# Configuration markdownlint pour gaston-infra
+default: true
+
+# Lignes longues : tables et commandes techniques
+MD013: false
+
+# HTML inline : badges, div align
+MD033: false
+
+# Première ligne non-heading : fichiers avec badges
+MD041: false
+
+# Headings en double : fichiers docs multiples
+MD024:
+  siblings_only: true
+
+# Style heading : atx (# heading)
+MD003:
+  style: atx
+
+# Style listes : consistent
+MD004:
+  style: consistent
+
+# Trailing punctuation : autoriser ? et :
+MD026:
+  punctuation: ".,;!"
+
+# Bare URLs : docs techniques avec URLs
+MD034: false
+
+# Emphasis as heading : usage légitime
+MD036: false
+
+# Fenced code language : pas toujours nécessaire
+MD040: false
+
+# Required headings : pas applicable
+MD043: false
+
+# Alt text sur images : pas toujours applicable
+MD045: false
+
+# Multiple blanks lines : tolérer
+MD012: false
+
+# Blanks around blockquote : tolérer
+MD028: false
+
+# Table column style (MD060) : trop strict pour les tables techniques
+MD060: false
+
+# Single trailing newline
+MD047: true
+
+# No trailing spaces
+MD009: true
+
+# No hard tabs
+MD010: true
+
+# List indent
+MD007:
+  indent: 2
+
+# OL prefix : ordered
+MD029: false
+
+# Descriptive link text : pas applicable partout
+MD059: false
+
+# Single H1 : certains docs ont des emoji + titre
+MD025: false
+
+# Heading increment : docs techniques
+MD001: false
+
+# List marker space
+MD030:
+  ul_single: 1
+  ol_single: 1
+  ul_multi: 1
+  ol_multi: 1
+
+# Commands show output
+MD014: false
+
+# Code block style
+MD046:
+  style: fenced
+
+# Strong style
+MD050:
+  style: consistent
+
+# Link fragments
+MD051: false
+
+# Reference links
+MD052: false
+MD053: false

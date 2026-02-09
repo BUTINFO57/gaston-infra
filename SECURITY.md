@@ -15,8 +15,7 @@ Il documente une architecture d'infrastructure réelle mais **ne doit contenir**
 Si vous trouvez des données sensibles qui ne devraient pas être publiques :
 
 1. **N'ouvrez PAS de ticket public.**
-2. Contactez les mainteneurs en privé :
-   - TODO[002]: Adresse email de contact sécurité | Où: SECURITY.md | Attendu: email | Exemple: securite@example.com
+2. Utilisez la fonctionnalité [**« Report a vulnerability »**](https://github.com/butinfoia-alt/gaston-infra/security/advisories/new) de GitHub Security Advisories.
 3. Nous répondrons sous 48 heures et supprimerons les données sensibles.
 
 ## Gestion des identifiants

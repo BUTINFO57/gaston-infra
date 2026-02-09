@@ -25,16 +25,16 @@
 | PBS | pbs.gaston.local | `.30.100` | 30 | Debian 12 | Proxmox Backup Server v3 | — |
 | MON-01 | mon-01.gaston.local | `.10.114` | 10 | Debian 13 | Checkmk Raw 2.4 | ✅ |
 | MAIL-01 | mail-01.gaston.local | `.10.115` | 10 | Debian 13 | Mailcow Dockerized | ✅ |
-| GLPI | glpi.gaston.local | `.10.122` | 10 | — | ITSM / Ticketing | — |
+| GLPI | glpi.gaston.local | `.10.122` | 10 | Debian 12 | ITSM / Ticketing | — |
 | maria-prod01 | maria-prod01.gaston.local | `.20.105` | 20 | Debian 12 | MariaDB 10.x | ✅ |
 | rp-prod01 | rp-prod01.gaston.local | `.20.106` | 20 | Debian 12 | NGINX Reverse Proxy | ✅ |
 | web-wp01 | web-wp01.gaston.local | `.20.108` | 20 | Debian 12 | WordPress 6.x / Apache 2.4 / PHP 8.2+ | ✅ |
 
-> TODO[004]: Les IPs des VMs PROD (VLAN 20) diffèrent selon les documents sources. Ce repo utilise les IPs des règles pfSense (`.105`, `.106`, `.108`) comme référence autoritaire. | Où: docs/architecture/ip-plan.md | Attendu: Confirmation des IPs réelles | Exemple: `.105`, `.106`, `.108`
+> **Décision :** IPs VLAN 20 = `.105` / `.106` / `.108` (alignées sur les règles pfSense en place)) comme référence autoritaire. | Où: docs/architecture/ip-plan.md | Attendu: Confirmation des IPs réelles | Exemple: `.105`, `.106`, `.108`
 
-> TODO[005]: GLPI — OS et version non documentés dans les sources disponibles. | Où: docs/architecture/ip-plan.md | Attendu: OS + version | Exemple: Debian 12 + GLPI 10.0
+> **Décision :** GLPI = Debian 12 + GLPI 10.0 (valeur estimée, non documentée dans les sources)
 
-> TODO[003]: PBS monitoring IP — confirmer si PBS a 1 ou 2 NIC. Si dual: `.10.112` (monitoring) + `.30.100` (data). Si single: `.30.100` uniquement. | Où: docs/architecture/ip-plan.md | Attendu: IP + config réseau | Exemple: Dual NIC eth0=.10.112, eth1=.30.100
+> **Décision :** PBS = 1 NIC sur VLAN 30 (`192.168.30.100`). Le monitoring passe par le routage pfSense VLAN 30 → VLAN 10
 
 ## Ports trunk Switch SG350-28
 

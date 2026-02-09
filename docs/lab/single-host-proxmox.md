@@ -89,8 +89,11 @@ Créer les VMs directement sur le stockage local de PVE :
 ```bash
 # Télécharger les ISOs
 cd /var/lib/vz/template/iso/
-wget <URL_DEBIAN_12_ISO>
-wget <URL_DEBIAN_13_ISO>
+# Debian 12 (Bookworm) — pour PBS, MON-01, stack web, Mailcow
+wget https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso
+
+# pfSense — déjà installé à l'étape 3, mais garder l'ISO pour référence
+# Télécharger depuis https://www.pfsense.org/download/
 ```
 
 Chaque VM utilise `vmbr0` avec le **VLAN tag** correspondant :
@@ -105,6 +108,26 @@ Chaque VM utilise `vmbr0` avec le **VLAN tag** correspondant :
 | rp-prod01 | 20 | 192.168.20.106 |
 | web-wp01 | 20 | 192.168.20.108 |
 | maria-prod01 | 20 | 192.168.20.105 |
+
+## Configuration avec 16 Go de RAM
+
+Si vous n'avez que 16 Go de RAM, réduisez les allocations :
+
+| VM | RAM normale | RAM réduite | Notes |
+|:---|:----------:|:----------:|:------|
+| pfSense | 2 Go | 1 Go | Suffisant pour < 20 VMs |
+| AD-DC01 | 4 Go | 2 Go | 2 Go minimum pour Samba AD |
+| AD-DC02 | 4 Go | **Supprimer** | Pas critique en LAB |
+| FS01 | 4 Go | 2 Go | 2 Go suffisent pour SMB |
+| MAIL-01 | 6 Go | 4 Go | Mailcow = 4 Go **minimum** |
+| MON-01 | 4 Go | 2 Go | Checkmk Raw suffisant |
+| PBS | 2 Go | 1 Go | Processus léger |
+| maria-prod01 | 2 Go | 1 Go | Base WP petite |
+| web-wp01 | 2 Go | 1 Go | Apache + PHP |
+| rp-prod01 | 1 Go | 512 Mo | NGINX = très léger |
+| **Total** | **~27 Go** | **~14,5 Go** | ✅ Rentre dans 16 Go |
+
+> ⚠️ Démarrer les VMs **par groupe** : d'abord pfSense + DC01, puis les services, enfin la stack web.
 
 ## Validation
 
