@@ -67,7 +67,7 @@
 
 ### 0.1 Contexte
 
-Les Saveurs de Gaston est une boulangerie-pâtisserie artisanale haut de gamme (~1 000 €/jour de CA, ~10 collaborateurs, ~150 utilisateurs AD). Le SI existant repose sur un NAS personnel reconverti (SPOF absolu, score de maturité SI : **15/100**). Ce runbook déploie en 1 journée un socle complet : virtualisation HA, identité, réseau segmenté, production web 3-tiers, sauvegarde, supervision.
+Les Saveurs de Gaston est boutique en ligne de vente de complément (~1 000 €/jour de CA, ~10 collaborateurs, ~150 utilisateurs AD). Le SI existant repose sur un NAS personnel reconverti (SPOF absolu, score de maturité SI : **15/100**). Ce runbook déploie en 1 journée un socle complet : virtualisation HA, identité, réseau segmenté, production web 3-tiers, sauvegarde, supervision.
 
 ### 0.2 Périmètre
 
