@@ -7,7 +7,7 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/ci.yml?label=CI&style=flat-square)
 ![Lint](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/lint.yml?label=lint&style=flat-square)
 
-**Projet SAÉ — Déploiement d'une infrastructure entreprise pour une PME (boulangerie-pâtisserie)**
+**Projet SAÉ — Déploiement d'une infrastructure entreprise pour une PME **
 
 Réseau segmenté · Virtualisation HA · Identité centralisée · Site web 3-tiers · Sauvegarde chiffrée
 
