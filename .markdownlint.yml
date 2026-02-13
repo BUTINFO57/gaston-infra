@@ -14,5 +14,10 @@ MD033:
 MD041: false
 MD024:
   siblings_only: true
+MD036: false
+MD028: false
+MD029: false
+MD040: false
 MD046:
   style: fenced
+MD060: false
