@@ -3,9 +3,9 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-![License](https://img.shields.io/github/license/butinfoia-alt/gaston-infra?style=flat-square)
-![CI](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/ci.yml?label=CI&style=flat-square)
-![Lint](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/lint.yml?label=lint&style=flat-square)
+![License](https://img.shields.io/github/license/BUTINFO57/gaston-infra?style=flat-square)
+![CI](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/ci.yml?label=CI&style=flat-square)
+![Lint](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/lint.yml?label=lint&style=flat-square)
 
 **Infrastructure as Code — Les Saveurs de Gaston (LAB + PROD)**
 
@@ -40,7 +40,7 @@ via Ansible (durcissement, services, stack web).
 ## 🚀 Démarrage rapide
 
 ```bash
-git clone https://github.com/butinfoia-alt/gaston-infra.git
+git clone https://github.com/BUTINFO57/gaston-infra.git
 cd gaston-infra
 ```
 

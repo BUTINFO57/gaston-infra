@@ -3,7 +3,7 @@
 ## 1. Cloner le repo
 
 ```bash
-git clone https://github.com/butinfoia-alt/gaston-infra.git
+git clone https://github.com/BUTINFO57/gaston-infra.git
 cd gaston-infra
 ```
 
