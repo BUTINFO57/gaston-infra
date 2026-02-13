@@ -88,6 +88,8 @@ jobs:
           python-version: "3.12"
       - name: Install ansible-lint
         run: pip install ansible-lint yamllint
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install -r automation/ansible/requirements.yml
       - name: Run ansible-lint
         run: ansible-lint automation/ansible/playbooks/ automation/ansible/roles/
       - name: Run yamllint
