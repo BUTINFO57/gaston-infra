@@ -5,6 +5,33 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
+## [1.1.0] — 2026-02-13
+
+### Ajouté
+
+- **IaC Terraform** : provisioning Proxmox complet (modules `vm`, `network`, `cloudinit`)
+- Environnement LAB mono-hôte et PROD multi-nœuds avec cloud-init
+- Makefile avec cibles `lint`, `docs`, `lab-plan`, `lab-apply`, `prod-plan`, `prod-apply`
+- Script `tools/tf-to-ansible-inventory.sh` : génération d'inventaire Ansible depuis Terraform
+- CI renforcée : `terraform fmt/validate`, `ansible-lint`, `shellcheck`, job `policy`
+- Dependabot pour les GitHub Actions
+- Guide `docs/ops/secrets.md` : gestion des secrets en local
+- Documentation deploy-first : parcours LAB 60 min et PROD 1 journée
+
+### Modifié
+
+- README refondu : page d'accueil IaC avec badges, commandes copiables, architecture
+- SECURITY.md : signalement via GitHub Private Vulnerability Reporting (sans email inventé)
+- CONTRIBUTING.md : Conventional Commits en français, règles PR, commandes `make`
+- `.gitignore` : protection `*.tfstate`, `*.tfvars`, `.terraform/`
+- Quickstart aligné sur le parcours Terraform → Ansible
+- Badges README pointent vers `butinfoia-alt/gaston-infra`
+
+### Corrigé
+
+- Résolution du placeholder `TODO-OWNER` dans badges et quickstart
+- Résolution du `TODO[002]` (contact sécurité) via Private Vulnerability Reporting
+
 ## [1.0.0] — 2026-02-09
 
 ### Ajouté

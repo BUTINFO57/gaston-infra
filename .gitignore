@@ -19,6 +19,21 @@ vault.yml
 *.crt
 !*.example
 
+## Terraform — NEVER commit state or variables
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
 ## Ansible
 *.retry
 .ansible/

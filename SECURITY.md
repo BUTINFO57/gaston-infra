@@ -15,16 +15,29 @@ Il documente une architecture d'infrastructure réelle mais **ne doit contenir**
 Si vous trouvez des données sensibles qui ne devraient pas être publiques :
 
 1. **N'ouvrez PAS de ticket public.**
-2. Contactez les mainteneurs en privé :
-   - TODO[002]: Adresse email de contact sécurité | Où: SECURITY.md | Attendu: email | Exemple: securite@example.com
-3. Nous répondrons sous 48 heures et supprimerons les données sensibles.
+2. Utilisez l'onglet **Security → Report a vulnerability** du dépôt GitHub
+   pour signaler le problème de manière privée (fonctionnalité « Private
+   vulnerability reporting » activée par GitHub par défaut sur les dépôts
+   publics).
+3. Si cette fonctionnalité n'est pas disponible, ouvrez un ticket en
+   indiquant uniquement « Donnée sensible détectée » sans révéler le contenu.
+4. Nous répondrons sous 48 heures et supprimerons les données sensibles.
 
 ## Gestion des identifiants
 
 - Tous les identifiants de ce dépôt utilisent des marqueurs `<PLACEHOLDER>`.
 - Les secrets réels doivent être stockés dans un gestionnaire de mots de passe (KeePassXC, Bitwarden, etc.).
 - Voir `examples/secrets.env.example` pour le format attendu.
-- **Ne jamais** commiter de fichiers `.env` — ils sont dans `.gitignore`.
+- Voir `docs/ops/secrets.md` pour le guide complet de gestion des secrets en local.
+- **Ne jamais** commiter de fichiers `.env`, `.tfvars`, `.tfstate` — ils sont dans `.gitignore`.
+
+## Garde-fous automatiques
+
+| Contrôle | Outil | Où |
+|:---------|:------|:---|
+| Scan de secrets | TruffleHog | CI (`.github/workflows/ci.yml`) |
+| Politique placeholders | Job `policy` | CI (interdit `<PLACEHOLDER>` sur `main` hors `*.example` et templates) |
+| Gitignore | `.gitignore` | Protège `*.tfstate`, `*.tfvars`, `*.env`, `secrets/`, `*.key`, `*.pem` |
 
 ## Versions supportées
 
