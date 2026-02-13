@@ -2,6 +2,16 @@
 
 Bienvenue dans la documentation du projet **Les Saveurs de Gaston**.
 
+## Parcours de lecture
+
+```text
+README.md                     → Vue d'ensemble et commandes rapides
+  └─→ docs/quickstart.md      → Démarrage en 5 minutes
+       ├─→ LAB (recommandé)   → Déploiement mono-hôte en 60 min
+       └─→ PROD               → Déploiement 3 nœuds en 1 journée
+            └─→ ops/           → Opérations quotidiennes
+```
+
 ## Navigation
 
 | Guide | Description | Public |
@@ -11,35 +21,52 @@ Bienvenue dans la documentation du projet **Les Saveurs de Gaston**.
 | [Prod — 3 Nodes](prod/overview.md) | Déploiement complet J0 | Production |
 | [Architecture](architecture/diagrams.md) | Schémas, IP plan, flux | Référence |
 | [Operations](ops/backup.md) | Backup, monitoring, rollback | Ops / Admin |
-
-## Parcours recommandé
-
-```text
-1. quickstart.md        → comprendre le projet
-2. lab/overview.md      → choisir son chemin (LAB ou PROD)
-3. lab/ ou prod/        → suivre le guide pas à pas
-4. ops/                 → opérations quotidiennes
-```
+| [Secrets](ops/secrets.md) | Gestion des secrets en local | Ops / Admin |
+| [Terraform](../iac/terraform/README.md) | IaC — provisioning Proxmox | DevOps |
+| [Ansible](../automation/ansible/README.md) | Configuration management | DevOps |
 
 ## Runbooks
 
-Les procédures exécutables sont dans [`/runbooks/`](../runbooks/):
+Les procédures exécutables sont dans [`/runbooks/`](../runbooks/) :
 
 - [Runbook J0 complet](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)
 - [Checklist exécutive 20 min](../runbooks/RUNBOOK-EXEC-20MIN.md)
 
+## Templates de configuration
+
+| Template | Guide associé |
+|:---------|:-------------|
+| [configs/nginx/rp-prod01.conf.template](../configs/nginx/rp-prod01.conf.template) | [Runbook §4.8](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) |
+| [configs/ufw/ufw-web.template](../configs/ufw/ufw-web.template) | [Playbook hardening](../automation/ansible/playbooks/hardening-min-j0.yml) |
+| [configs/ufw/ufw-db.template](../configs/ufw/ufw-db.template) | [Playbook hardening](../automation/ansible/playbooks/hardening-min-j0.yml) |
+| [configs/samba/provision.sh.template](../configs/samba/provision.sh.template) | [Runbook §4.4](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#44-samba-ad-dc1--dc2) |
+| [configs/samba/ou-groups.sh.template](../configs/samba/ou-groups.sh.template) | [Runbook §4.4](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#44-samba-ad-dc1--dc2) |
+| [configs/pfsense/](../configs/pfsense/) | [Runbook §4.2](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#42-pfsense-ce) |
+
+## Playbooks Ansible
+
+| Playbook | Cible | Guide |
+|:---------|:------|:------|
+| [base-linux.yml](../automation/ansible/playbooks/base-linux.yml) | Toutes les VMs Linux | [Quickstart §4](quickstart.md#étape-4--configurer-les-services-avec-ansible-30-min) |
+| [hardening-min-j0.yml](../automation/ansible/playbooks/hardening-min-j0.yml) | Durcissement SSH/UFW/fail2ban | [Runbook §4.10](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md) |
+| [mariadb.yml](../automation/ansible/playbooks/mariadb.yml) | maria-prod01 | [Runbook §4.8](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) |
+| [wordpress.yml](../automation/ansible/playbooks/wordpress.yml) | web-wp01 | [Runbook §4.8](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) |
+| [nginx-rp.yml](../automation/ansible/playbooks/nginx-rp.yml) | rp-prod01 | [Runbook §4.8](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) |
+| [checkmk-agent.yml](../automation/ansible/playbooks/checkmk-agent.yml) | Toutes les VMs | [Runbook §4.6](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#46-supervision--mon-01-checkmk) |
+| [mailcow.yml](../automation/ansible/playbooks/mailcow.yml) | mail-01 | [Runbook §4.5](../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#45-services-socle) |
+
 ---
 
-## TODO Registry (global)
+## Registre TODO (global)
 
-| ID | Description | Location | Status |
-|:---|:-----------|:---------|:-------|
-| TODO[001] | GitHub repository owner username | `README.md` | Pending |
-| TODO[002] | Security contact email address | `SECURITY.md` | Pending |
-| TODO[003] | PBS monitoring IP — 192.168.30.100 or 192.168.10.x? | `docs/ops/monitoring.md`, `docs/architecture/ip-plan.md` | Pending |
-| TODO[004] | PROD VM IPs — .106/.108/.105 or .110/.111/.112? | `docs/architecture/ip-plan.md` | Pending |
-| TODO[005] | GLPI exact OS and version (Debian 12 assumed) | `docs/architecture/ip-plan.md` | Pending |
-| TODO[006] | LDAP Auth Container DN for pfSense VPN bind | `configs/pfsense/openvpn.md` | Pending |
+| ID | Description | Emplacement | Statut |
+|:---|:-----------|:------------|:-------|
+| TODO[001] | Propriétaire du dépôt GitHub | `README.md` | ✅ Résolu (`butinfoia-alt`) |
+| TODO[002] | Contact sécurité | `SECURITY.md` | ✅ Résolu (GitHub Private Reporting) |
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | `docs/ops/monitoring.md` | En attente — paramétrable |
+| TODO[004] | IPs PROD VLAN 20 (.105/.106/.108 retenu) | `docs/architecture/ip-plan.md` | En attente — valeurs pfSense utilisées |
+| TODO[005] | OS GLPI (Debian 12 supposé) | `docs/architecture/ip-plan.md` | En attente |
+| TODO[006] | Auth Container LDAP pfSense VPN | `configs/pfsense/openvpn.md` | En attente |
 
 ---
 
