@@ -2,7 +2,7 @@
 
 ## Structure
 
-```
+```text
 automation/
 ├── .gitkeep
 ├── ansible/
