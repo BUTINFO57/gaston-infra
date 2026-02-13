@@ -45,6 +45,26 @@ Il renvoie vers le [runbook complet](../../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN
 
 > 🔴 Si un critère échoue → STOP. Corriger avant de continuer.
 
+### Rollback par bloc
+
+En cas de problème, voici la stratégie de retour arrière par phase :
+
+| Phase | Rollback | Commande / Action |
+|:------|:---------|:------------------|
+| Switch SG350 | Reset usine | Maintenir le bouton Reset 15 s |
+| pfSense | Restaurer XML | `Diagnostics > Backup & Restore` → importer le XML sauvé |
+| Proxmox install | Réinstaller | L'install PVE écrase tout, pas de rollback nécessaire |
+| Cluster | Dissocier | `pvecm delnode <nom>` + recréer |
+| NFS | Démonter | `umount /mnt/ha-nfs` + supprimer l'entrée PVE |
+| AD-DC01 | Snapshot | `qm rollback <vmid> <snap>` avant la promo DC |
+| FS01 | Snapshot | `qm rollback <vmid> <snap>` avant le join domaine |
+| MAIL-01 | Supprimer + recréer | `docker compose down -v` + reprendre §4.5.2 |
+| MON-01 | Snapshot | `qm rollback <vmid> <snap>` |
+| PBS | Snapshot | `qm rollback <vmid> <snap>` |
+| Stack Web | Snapshot par VM | `qm rollback <vmid> <snap>` avant chaque config |
+
+> 💡 **Bonne pratique** : prendre un snapshot Proxmox **avant** chaque étape de configuration importante. Nommez-le `pre-<étape>` (ex: `pre-samba-provision`).
+
 ### 12:15 — Identité + Services
 
 | Étape | Runbook | Validation |

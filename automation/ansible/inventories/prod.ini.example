@@ -2,9 +2,9 @@
 # Copier vers prod.ini et modifier les valeurs
 
 [pve]
-pve1 ansible_host=192.168.10.116
-pve2 ansible_host=192.168.10.117
-pve3 ansible_host=192.168.10.118
+pve1 ansible_host=192.168.10.11
+pve2 ansible_host=192.168.10.12
+pve03 ansible_host=192.168.10.50
 
 [domain_controllers]
 ad-dc01 ansible_host=192.168.10.10

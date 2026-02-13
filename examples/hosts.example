@@ -10,11 +10,11 @@
 192.168.10.9    ad-dc02.gaston.local    ad-dc02
 192.168.10.10   ad-dc01.gaston.local    ad-dc01
 192.168.10.111  fs01.gaston.local       fs01
-192.168.10.114  mon01.gaston.local      mon01       checkmk
-192.168.10.115  mail01.gaston.local     mail01      mail
-192.168.10.116  pve1.gaston.local       pve1
-192.168.10.117  pve2.gaston.local       pve2
-192.168.10.118  pve3.gaston.local       pve3
+192.168.10.114  mon-01.gaston.local     mon-01      checkmk
+192.168.10.115  mail-01.gaston.local    mail-01     mail
+192.168.10.11   pve1.gaston.local       pve1
+192.168.10.12   pve2.gaston.local       pve2
+192.168.10.50   pve03.gaston.local      pve03
 192.168.10.122  glpi.gaston.local       glpi
 
 # --- VLAN 20 — Production ---
@@ -23,4 +23,4 @@
 192.168.20.108  web-wp01.gaston.local       web-wp01        wp
 
 # --- VLAN 30 — Backup ---
-192.168.30.100  pbs01.gaston.local      pbs01       pbs
+192.168.30.100  pbs.gaston.local        pbs

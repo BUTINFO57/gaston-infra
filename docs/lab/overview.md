@@ -46,3 +46,40 @@ Une fois l'hôte prêt, suivre le [runbook J0](../prod/day0-runbook.md) en ignor
 
 - §4.1 (Switch SG350) → remplacé par les bridges
 - §4.3.3–4.3.6 (Cluster + NFS) → pas applicable en mono-nœud
+
+## Checklist LAB express (~30 minutes de préparation)
+
+Avant de démarrer, cochez chaque élément :
+
+- [ ] PC avec 16+ Go RAM, 256+ Go SSD, 1 port Ethernet
+- [ ] Clé USB ≥ 2 Go (pour l'ISO Proxmox)
+- [ ] ISO **Proxmox VE 9.x** téléchargé : <https://www.proxmox.com/en/downloads>
+- [ ] ISO **Debian 12 netinst** téléchargé : <https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/>
+- [ ] ISO **pfSense CE 2.7** téléchargé : <https://www.pfsense.org/download/>
+- [ ] Connexion Internet (pour `apt`, Docker pulls, Mailcow, Checkmk)
+- [ ] Ce guide ouvert dans un onglet navigateur
+
+### Ordre de déploiement LAB
+
+```text
+┌─────────────────────────────────────────────────┐
+│  1. Installer Proxmox VE sur le PC              │  ~10 min
+│  2. Créer les bridges VLAN-aware (vmbr0)        │   ~5 min
+│  3. Créer + configurer la VM pfSense            │  ~15 min
+│  4. Créer les VMs (DC01, FS01, MAIL, MON, PBS)  │  ~10 min/VM
+│  5. Suivre le runbook J0 à partir de §4.4       │  ~4 heures
+└─────────────────────────────────────────────────┘
+```
+
+### Ce qui est simulé en LAB
+
+| Composant PROD | Simulation LAB | Fonctionnel ? |
+|:---------------|:---------------|:-------------:|
+| Switch SG350-28 (802.1Q) | Bridge `vmbr0` VLAN-aware | ✅ Identique |
+| Cluster 3 nœuds + HA | 1 nœud, pas de HA | ⚠️ Réduit |
+| NFS partagé (PVE03) | Stockage local | ⚠️ Pas de migration live |
+| pfSense 2 NIC physiques | pfSense 2 vNIC | ✅ Identique |
+| AD-DC02 réplica | Optionnel (économie RAM) | ⚠️ Optionnel |
+| PBS VLAN 30 isolé | VM même hôte, VLAN tag 30 | ✅ Identique |
+
+> 💡 **L'essentiel fonctionne à l'identique** : VLANs, routage pfSense, AD, DNS, partages SMB, Mailcow, Checkmk, PBS, stack web. Seuls le clustering et la HA ne sont pas reproductibles sur un seul hôte.
