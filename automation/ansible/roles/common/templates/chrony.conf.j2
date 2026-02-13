@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+# Configuration Chrony NTP — gaston.local
+
+{% for server in ntp_servers | default(['0.fr.pool.ntp.org', '1.fr.pool.ntp.org']) %}
+server {{ server }} iburst
+{% endfor %}
+
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/chrony
