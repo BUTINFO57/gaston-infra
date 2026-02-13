@@ -2,7 +2,7 @@
 
 ## Structure
 
-```
+```text
 automation/
 ├── .gitkeep
 ├── ansible/
@@ -100,3 +100,13 @@ Ce sont des choix de conception délibérés — les appliances avec WebUI sont 
 | Python | ≥ 3.10 | Pré-installé sur Debian 12 |
 | sshpass | Dernière | `apt install sshpass` (pour l'auth initiale par mot de passe) |
 | PowerShell | 5.1+ | Intégré à Windows Server 2022 |
+
+## TODOs liés à Ansible
+
+| TODO | Description | Impact |
+|:-----|:-----------|:-------|
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | Variable `monitoring_host` dans inventaire |
+| TODO[006] | Auth LDAP pfSense VPN | Variable `ldap_server` dans rôles si ajouté |
+
+> Ces TODOs ne bloquent **pas** le LAB minimal. Les valeurs par défaut
+> dans `roles/*/defaults/main.yml` sont fonctionnelles.

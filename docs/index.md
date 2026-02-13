@@ -59,14 +59,18 @@ Les procédures exécutables sont dans [`/runbooks/`](../runbooks/) :
 
 ## Registre TODO (global)
 
-| ID | Description | Emplacement | Statut |
-|:---|:-----------|:------------|:-------|
-| TODO[001] | Propriétaire du dépôt GitHub | `README.md` | ✅ Résolu (`butinfoia-alt`) |
-| TODO[002] | Contact sécurité | `SECURITY.md` | ✅ Résolu (GitHub Private Reporting) |
-| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | `docs/ops/monitoring.md` | En attente — paramétrable |
-| TODO[004] | IPs PROD VLAN 20 (.105/.106/.108 retenu) | `docs/architecture/ip-plan.md` | En attente — valeurs pfSense utilisées |
-| TODO[005] | OS GLPI (Debian 12 supposé) | `docs/architecture/ip-plan.md` | En attente |
-| TODO[006] | Auth Container LDAP pfSense VPN | `configs/pfsense/openvpn.md` | En attente |
+| ID | Description | Emplacement | Paramétrable via | Statut |
+|:---|:-----------|:------------|:----------------|:-------|
+| TODO[001] | Propriétaire du dépôt GitHub | `README.md` | — | ✅ Résolu (`BUTINFO57`) |
+| TODO[002] | Contact sécurité | `SECURITY.md` | — | ✅ Résolu (GitHub Private Reporting) |
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | `docs/ops/monitoring.md` | `vlan30_prefix` dans `terraform.tfvars` | ⏳ En attente — paramétrable |
+| TODO[004] | IPs PROD VLAN 20 (.105/.106/.108 retenu) | `docs/architecture/ip-plan.md` | `vlan20_prefix` dans `terraform.tfvars` | ⏳ En attente — valeurs pfSense utilisées |
+| TODO[005] | OS GLPI (Debian 12 supposé) | `docs/architecture/ip-plan.md` | `template_id_debian` dans `terraform.tfvars` | ⏳ En attente — Debian 12 par défaut |
+| TODO[006] | Auth Container LDAP pfSense VPN | `configs/pfsense/openvpn.md` | Config manuelle pfSense WebUI | ⏳ En attente — config pfSense |
+
+> **Note :** les TODOs 003–006 ne bloquent **pas** le déploiement LAB minimal.
+> Ils sont paramétrables via les fichiers `.tfvars` ou via la WebUI pfSense sans toucher au code.
+> Voir aussi : [iac/terraform/README.md](../iac/terraform/README.md#todos-liés-à-terraform) · [automation/ansible/README.md](../automation/ansible/README.md#todos-liés-à-ansible)
 
 ---
 

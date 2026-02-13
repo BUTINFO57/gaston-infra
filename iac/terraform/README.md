@@ -145,6 +145,48 @@ terraform destroy
 | `versions.tf` | Contraintes provider et Terraform |
 | `terraform.tfvars.example` | Exemple de valeurs (sans secrets) |
 
+## Variables à fournir
+
+### LAB (mono-hôte)
+
+| Variable | Description | Défaut | Obligatoire |
+|:---------|:-----------|:-------|:----------:|
+| `pm_api_url` | URL API Proxmox | — | ✅ |
+| `pm_node` | Nom du nœud Proxmox | `pve1` | ❌ |
+| `template_id_debian` | VMID du template cloud-init Debian | `9000` | ❌ |
+| `storage` | Datastore Proxmox | `local-lvm` | ❌ |
+| `bridge` | Bridge Proxmox principal | `vmbr0` | ❌ |
+| `vlan10_prefix` | Préfixe VLAN 10 (Admin) | `192.168.10` | ❌ |
+| `vlan20_prefix` | Préfixe VLAN 20 (Prod) | `192.168.20` | ❌ |
+| `vlan30_prefix` | Préfixe VLAN 30 (Backup) | `192.168.30` | ❌ |
+| `dns_servers` | Serveurs DNS | `[.10.10, .10.9]` | ❌ |
+| `ssh_public_keys` | Clés SSH publiques | `[]` | ✅ |
+
+### PROD (multi-nœuds)
+
+Mêmes variables que LAB, plus :
+
+| Variable | Description | Défaut | Obligatoire |
+|:---------|:-----------|:-------|:----------:|
+| `node_prod` | Nœud VMs production | `pve1` | ❌ |
+| `node_infra` | Nœud VMs infrastructure | `pve2` | ❌ |
+| `node_secours` | Nœud secours + NFS | `pve03` | ❌ |
+
+> Les identifiants Proxmox (`PM_API_TOKEN_ID`, `PM_API_TOKEN_SECRET`)
+> doivent être passés via variables d'environnement — **jamais dans `.tfvars`**.
+> Voir [docs/ops/secrets.md](../../docs/ops/secrets.md).
+
+## TODOs liés à Terraform
+
+| TODO | Description | Impact |
+|:-----|:-----------|:-------|
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | Adresse PBS dans `main.tf` |
+| TODO[004] | IPs PROD VLAN 20 (retenues: .105/.106/.108) | Fixé dans `main.tf` |
+| TODO[005] | OS GLPI (Debian 12 supposé) | Template dans `prod/main.tf` |
+
+> Ces TODOs ne bloquent **pas** le LAB minimal. Ils sont paramétrables
+> via `terraform.tfvars` sans modifier le code.
+
 ## Liens
 
 - [Plan IP](../../docs/architecture/ip-plan.md)
