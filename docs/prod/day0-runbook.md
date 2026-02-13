@@ -81,3 +81,130 @@ Il renvoie vers le [runbook complet](../../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN
 | Export configs | §5.5 | pfSense XML + snapshots |
 
 ### 18:00 — ✅ MVP Opérationnel
+
+---
+
+## Comment déployer PROD
+
+Procédure exécutable complète. Chaque bloc est autonome avec sa validation.
+
+### Pré-requis
+
+- [ ] Cluster Proxmox opérationnel (3 nœuds, quorum OK, NFS partagé)
+- [ ] Template cloud-init Debian 12 créé sur chaque nœud (VMID 9000)
+- [ ] Template sysprep Windows Server 2022 (pour FS01)
+- [ ] Réseau prêt : switch configuré, pfSense installé, VLANs 10/20/30 routés
+- [ ] Secrets générés et stockés (voir [docs/ops/secrets.md](../ops/secrets.md))
+- [ ] Terraform ≥ 1.6 et Ansible ≥ 2.15 installés sur la machine admin
+
+### Étape 1 — Terraform : provisionner les VMs
+
+```bash
+cd iac/terraform/prod
+cp terraform.tfvars.example terraform.tfvars
+# Éditer terraform.tfvars :
+#   pm_api_url    = "https://192.168.10.11:8006/api2/json"
+#   node_prod     = "pve1"
+#   node_infra    = "pve2"
+#   node_secours  = "pve03"
+#   ssh_public_keys = ["ssh-ed25519 AAAA..."]
+
+export PM_API_TOKEN_ID="terraform@pam!iac"
+export PM_API_TOKEN_SECRET="votre-token-secret"
+
+terraform init
+terraform plan -out=prod.tfplan
+terraform apply prod.tfplan
+```
+
+**Validation :** `terraform output` → 9 VMs avec IPs correctes.
+
+### Étape 2 — Ansible : configurer les VMs Linux
+
+```bash
+cd ../../../automation/ansible
+cp inventories/prod.ini.example inventories/prod.ini
+# Vérifier les IPs dans inventories/prod.ini
+
+# Configuration de base sur toutes les VMs
+ansible-playbook -i inventories/prod.ini playbooks/base-linux.yml
+
+# Durcissement SSH + UFW + fail2ban
+ansible-playbook -i inventories/prod.ini playbooks/hardening-min-j0.yml
+
+# Stack web 3-tiers
+ansible-playbook -i inventories/prod.ini playbooks/mariadb.yml
+ansible-playbook -i inventories/prod.ini playbooks/wordpress.yml
+ansible-playbook -i inventories/prod.ini playbooks/nginx-rp.yml
+
+# Services infra
+ansible-playbook -i inventories/prod.ini playbooks/mailcow.yml
+ansible-playbook -i inventories/prod.ini playbooks/checkmk-agent.yml
+```
+
+**Validation :**
+
+```bash
+curl -k https://192.168.20.106     # → page WordPress via NGINX
+ssh deploy@192.168.10.10           # → connexion AD-DC01
+```
+
+### Étape 3 — pfSense (manuel)
+
+Configuration via WebUI (`https://192.168.10.1`).
+
+Référence : [configs/pfsense/](../../configs/pfsense/)
+
+- [ ] Aliases créés → [aliases.md](../../configs/pfsense/aliases.md)
+- [ ] Règles firewall appliquées → [rules.md](../../configs/pfsense/rules.md)
+- [ ] VPN OpenVPN configuré → [openvpn.md](../../configs/pfsense/openvpn.md)
+- [ ] Export XML sauvegardé → [config-export.md](../../configs/pfsense/config-export.md)
+
+### Étape 4 — Samba AD (manuel/semi-auto)
+
+Exécuter les scripts templates sur AD-DC01 puis AD-DC02.
+
+Référence : [configs/samba/](../../configs/samba/) · [Runbook §4.4](../../runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#44-samba-ad-dc1--dc2)
+
+```bash
+# Sur AD-DC01 (192.168.10.10)
+# Adapter configs/samba/provision.sh.template puis exécuter
+bash provision.sh
+
+# Créer les OUs et groupes
+bash ou-groups.sh
+
+# Sur AD-DC02 (192.168.10.9) — réplication
+samba-tool domain join gaston.local DC -U Administrator
+```
+
+**Validation :** `samba-tool drs showrepl` → réplication OK.
+
+### Étape 5 — PBS (manuel)
+
+Installation et configuration du serveur de sauvegarde PBS.
+
+Référence : [docs/ops/backup.md](../ops/backup.md)
+
+- [ ] PBS installé sur VM `pbs` (192.168.30.100)
+- [ ] Datastore configuré (AES-256-GCM, ZSTD)
+- [ ] PVE → PBS : ajout du stockage PBS dans Proxmox
+- [ ] Job de backup planifié (quotidien)
+- [ ] Test : 1 backup + 1 restore OK
+
+### Étape 6 — FS01 Windows (template sysprep + PowerShell)
+
+Cloner le template sysprep Windows Server 2022, puis configurer via PowerShell.
+
+Référence : [automation/powershell/](../../automation/powershell/)
+
+```powershell
+# Sur FS01 après le premier boot
+# 1. Bootstrap (réseau, hostname, jonction domaine)
+.\fs01-bootstrap.ps1
+
+# 2. Après redémarrage et jonction au domaine
+.\fs01-shares.ps1
+```
+
+**Validation :** `Get-SmbShare` → 7 partages SMB configurés.
