@@ -46,33 +46,82 @@ cd gaston-infra
 
 ➡️ **[docs/quickstart.md](docs/quickstart.md)** — Guide complet de démarrage
 
-### 🧪 Parcours LAB (recommandé) — 1 heure
+---
 
-> **1 seul PC/serveur** avec Proxmox. Même architecture logique, sans HA.
+## 🧪 Démarrer — LAB en 60 minutes
+
+> **1 seul PC/serveur** avec Proxmox VE ≥ 8.0 + template cloud-init Debian.
+> Même architecture logique que la PROD, sans HA.
 
 ```bash
-# 1. Préparer le template cloud-init Debian (voir iac/terraform/README.md)
-# 2. Provisionner les VMs
+# 1. Provisionner les VMs
 cd iac/terraform/lab
-cp terraform.tfvars.example terraform.tfvars    # éditer avec vos valeurs
-terraform init && terraform plan -out=lab.tfplan && terraform apply lab.tfplan
+cp terraform.tfvars.example terraform.tfvars    # ← éditer avec vos valeurs
+export PM_API_TOKEN_ID="terraform@pam!iac"
+export PM_API_TOKEN_SECRET="votre-token-secret"
+terraform init
+terraform plan -out=lab.tfplan
+terraform apply lab.tfplan
 
-# 3. Générer l'inventaire Ansible
-bash ../../../tools/tf-to-ansible-inventory.sh lab
+# 2. Générer l'inventaire Ansible
+cd ../../..
+bash tools/tf-to-ansible-inventory.sh lab
 
-# 4. Configurer les services
-cd ../../../automation/ansible
+# 3. Configurer les services
+cd automation/ansible
 ansible-playbook -i inventories/lab.ini playbooks/base-linux.yml
 ansible-playbook -i inventories/lab.ini playbooks/hardening-min-j0.yml
+ansible-playbook -i inventories/lab.ini playbooks/mariadb.yml
+ansible-playbook -i inventories/lab.ini playbooks/wordpress.yml
+ansible-playbook -i inventories/lab.ini playbooks/nginx-rp.yml
 ```
 
-➡️ **[Guide LAB complet](docs/lab/overview.md)**
+**Validation rapide :**
 
-### 🏭 Parcours PROD — 1 journée
+```bash
+curl -k https://192.168.20.106          # → page WordPress
+ssh deploy@192.168.10.10                 # → connexion AD-DC01
+terraform -chdir=iac/terraform/lab output  # → IPs de toutes les VMs
+```
+
+➡️ **[Guide LAB complet](docs/quickstart.md#5-déploiement-lab-en-60-minutes)** · **[Lab overview](docs/lab/overview.md)**
+
+---
+
+## 🏭 Démarrer — PROD en 1 journée
 
 > 3 serveurs physiques + switch + pfSense dédié. Cluster HA 3 nœuds.
 
-➡️ **[Guide PROD](docs/prod/overview.md)** · **[Runbook J0](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)**
+```bash
+# 1. Provisionner les VMs sur le cluster
+cd iac/terraform/prod
+cp terraform.tfvars.example terraform.tfvars    # ← placement multi-nœuds
+terraform init
+terraform plan -out=prod.tfplan
+terraform apply prod.tfplan
+
+# 2. Configurer avec Ansible
+cd ../../../automation/ansible
+cp inventories/prod.ini.example inventories/prod.ini
+ansible-playbook -i inventories/prod.ini playbooks/base-linux.yml
+ansible-playbook -i inventories/prod.ini playbooks/hardening-min-j0.yml
+ansible-playbook -i inventories/prod.ini playbooks/mailcow.yml
+ansible-playbook -i inventories/prod.ini playbooks/checkmk-agent.yml
+ansible-playbook -i inventories/prod.ini playbooks/nginx-rp.yml
+ansible-playbook -i inventories/prod.ini playbooks/mariadb.yml
+ansible-playbook -i inventories/prod.ini playbooks/wordpress.yml
+```
+
+**Parties manuelles** (attendues — voir section dédiée ci-dessous) :
+
+| Service | Guide | Durée |
+|:--------|:------|:-----:|
+| pfSense (routage, FW, VPN) | [configs/pfsense/](configs/pfsense/) | 1 h 30 |
+| Samba AD (DC01 + DC02) | [configs/samba/](configs/samba/) | 1 h 15 |
+| FS01 Windows (partages SMB) | [automation/powershell/](automation/powershell/) | 30 min |
+| PBS (sauvegarde) | [docs/ops/backup.md](docs/ops/backup.md) | 30 min |
+
+➡️ **[Guide PROD](docs/prod/overview.md)** · **[Runbook J0](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)** · **[Day0 Runbook](docs/prod/day0-runbook.md)**
 
 ---
 
@@ -147,6 +196,25 @@ make prod-plan         # Planifier le déploiement PROD
 make prod-apply        # Appliquer le déploiement PROD
 make validate          # Validation complète (lint + docs)
 ```
+
+---
+
+## 🔧 Ce qui reste manuel et pourquoi
+
+Certains composants ne sont **pas** automatisés par Terraform/Ansible.
+C'est un choix de conception documenté (pas un oubli).
+
+| Composant | Raison | Référence |
+|:----------|:-------|:----------|
+| **pfSense** | Pas d'API Terraform fiable et stable. Config via WebUI + export XML. | [configs/pfsense/](configs/pfsense/) |
+| **Samba AD** | Provisionnement automatisable mais risque élevé. Scripts templates + exécution manuelle. | [configs/samba/](configs/samba/) |
+| **PBS** | Intégration PVE↔PBS partiellement manuelle selon l'infrastructure physique. | [docs/ops/backup.md](docs/ops/backup.md) |
+| **FS01 Windows** | Dépend d'un template sysprep (non généré automatiquement). Config via PowerShell post-deploy. | [automation/powershell/](automation/powershell/) |
+| **Switch SG350** | Configuration VLAN via WebUI Cisco. Pas d'API IaC standard. | [runbooks/](runbooks/) |
+| **Proxmox cluster** | Mise en cluster (pvecm) = opération manuelle unique sur chaque nœud. | [docs/prod/day0-runbook.md](docs/prod/day0-runbook.md) |
+
+> Les checklists et templates sont fournis pour chaque composant manuel.
+> L'objectif est la **reproductibilité documentée**, pas l'automatisation totale.
 
 ---
 

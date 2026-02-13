@@ -46,3 +46,22 @@ flowchart LR
 | 1. Déploiement J0 | [day0-runbook.md](day0-runbook.md) | 10 h |
 | 2. Tests de validation | [validation.md](validation.md) | 1 h |
 | 3. Opérations quotidiennes | [ops/](../ops/) | Continu |
+
+---
+
+## 🔧 Ce qui reste manuel et pourquoi
+
+Certains composants ne sont **pas** automatisés par Terraform/Ansible.
+C'est un choix de conception documenté — pas un oubli.
+
+| Composant | Raison | Référence |
+|:----------|:-------|:----------|
+| **pfSense** | Pas d'API Terraform fiable et stable. Configuration via WebUI, export XML pour sauvegarde. | [configs/pfsense/](../../configs/pfsense/) |
+| **Samba AD** | Provisionnement automatisable mais risque élevé (annuaire = critique). Scripts templates fournis, exécution manuelle contrôlée. | [configs/samba/](../../configs/samba/) |
+| **PBS** | Intégration PVE↔PBS partiellement manuelle selon l'infrastructure physique (datastores, réplication). | [docs/ops/backup.md](../ops/backup.md) |
+| **FS01 Windows** | Dépend d'un template sysprep (non généré automatiquement). Configuration post-deploy via scripts PowerShell. | [automation/powershell/](../../automation/powershell/) |
+| **Switch SG350** | Configuration VLAN via WebUI Cisco. Pas d'API IaC standard pour ce modèle. | [runbooks/](../../runbooks/) |
+| **Proxmox cluster** | Mise en cluster (`pvecm`) = opération manuelle unique sur chaque nœud physique. | [day0-runbook.md](day0-runbook.md) |
+
+> **Philosophie :** les checklists et templates sont fournis pour chaque composant manuel.
+> L'objectif est la **reproductibilité documentée**, pas l'automatisation totale à tout prix.
