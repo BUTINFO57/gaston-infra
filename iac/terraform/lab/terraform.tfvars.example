@@ -1,0 +1,33 @@
+# ===========================================================================
+# LAB — Exemple de variables (SANS SECRETS)
+# Copier vers terraform.tfvars et compléter avec vos valeurs réelles.
+# ⚠️  NE JAMAIS commiter terraform.tfvars
+# ===========================================================================
+
+# URL de l'API Proxmox de votre nœud LAB
+pm_api_url = "https://192.168.1.50:8006/api2/json"
+
+# Nom du nœud Proxmox (visible dans l'UI Proxmox)
+pm_node = "pve1"
+
+# VMID du template Debian cloud-init (créé selon iac/terraform/README.md)
+template_id_debian = 9000
+
+# Datastore pour les disques VM
+storage = "local-lvm"
+
+# Bridge réseau principal
+bridge = "vmbr0"
+
+# Préfixes réseau (adapter si votre réseau LAB diffère)
+vlan10_prefix = "192.168.10"
+vlan20_prefix = "192.168.20"
+vlan30_prefix = "192.168.30"
+
+# DNS — les AD DC seront configurés après provisioning
+dns_servers = ["192.168.10.10", "192.168.10.9"]
+
+# Clés SSH publiques pour l'accès initial aux VMs
+ssh_public_keys = [
+  # "ssh-ed25519 AAAA... votre-cle@machine"
+]
