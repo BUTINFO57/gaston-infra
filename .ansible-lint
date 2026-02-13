@@ -1,0 +1,23 @@
+---
+# ansible-lint — Configuration
+# Réf. : https://ansible.readthedocs.io/projects/lint/configuring/
+
+profile: moderate
+
+exclude_paths:
+  - .git/
+  - .github/
+  - node_modules/
+
+skip_list:
+  - yaml[line-length]
+  - name[casing]
+  - no-changed-when
+  - command-instead-of-module
+  - risky-file-permissions
+
+warn_list:
+  - experimental
+  - role-name
+
+use_default_rules: true
