@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+# Configuration DNS — gaston.local
+
+search {{ domain | default('gaston.local') }}
+{% for server in dns_servers | default(['192.168.10.10', '192.168.10.9']) %}
+nameserver {{ server }}
+{% endfor %}

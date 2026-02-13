@@ -1,0 +1,35 @@
+# ===========================================================================
+# PROD — Exemple de variables (SANS SECRETS)
+# Copier vers terraform.tfvars et compléter avec vos valeurs réelles.
+# ⚠️  NE JAMAIS commiter terraform.tfvars
+# ===========================================================================
+
+# URL de l'API Proxmox (nœud principal du cluster)
+pm_api_url = "https://192.168.10.11:8006/api2/json"
+
+# Nœuds Proxmox — placement des VMs
+node_prod    = "pve1"    # VMs production (web 3-tiers)
+node_infra   = "pve2"    # VMs infrastructure (AD, mail, monitoring)
+node_secours = "pve03"   # VMs secours (AD DC02, PBS) + NFS
+
+# VMID du template Debian cloud-init
+template_id_debian = 9000
+
+# Datastore (adapter selon votre config : local-lvm, nfs-shared, ceph, etc.)
+storage = "local-lvm"
+
+# Bridge réseau trunk
+bridge = "vmbr0"
+
+# Préfixes réseau (conformes au plan IP docs/architecture/ip-plan.md)
+vlan10_prefix = "192.168.10"
+vlan20_prefix = "192.168.20"
+vlan30_prefix = "192.168.30"
+
+# DNS — serveurs AD
+dns_servers = ["192.168.10.10", "192.168.10.9"]
+
+# Clés SSH publiques pour l'accès initial aux VMs
+ssh_public_keys = [
+  # "ssh-ed25519 AAAA... admin@workstation"
+]

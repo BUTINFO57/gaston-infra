@@ -1,38 +1,28 @@
 # 🏗️ gaston-infra
 
-<!-- markdownlint-disable MD033 MD036 MD041 -->
+<!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-![Licence](https://img.shields.io/github/license/butinfoia-alt/gaston-infra?style=flat-square)
-![CI](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/ci.yml?label=CI&style=flat-square)
-![Lint](https://img.shields.io/github/actions/workflow/status/butinfoia-alt/gaston-infra/lint.yml?label=lint&style=flat-square)
+![License](https://img.shields.io/github/license/BUTINFO57/gaston-infra?style=flat-square)
+![CI](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/ci.yml?label=CI&style=flat-square)
+![Lint](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/lint.yml?label=lint&style=flat-square)
 
-**Projet SAÉ — Déploiement d'une infrastructure entreprise pour une PME**
+**Infrastructure as Code — Les Saveurs de Gaston (LAB + PROD)**
 
-Réseau segmenté · Virtualisation HA · Identité centralisée · Site web 3-tiers · Sauvegarde chiffrée
+Terraform · Ansible · Proxmox · pfSense · Samba AD · 3 VLANs · CI/CD
 
 </div>
 <!-- markdownlint-enable MD033 MD041 -->
 
 ---
 
-## 📋 C'est quoi ?
+## 📖 À propos
 
-Un dépôt **Infrastructure-as-Code** complet pour déployer l'infrastructure IT d'une PME
-(*Les Saveurs de Gaston*, ~150 postes) **en une journée**.
+Dépôt IaC complet pour déployer l'infrastructure **Les Saveurs de Gaston**,
+une PME fictive avec une architecture enterprise-grade.
 
-Il contient : documentation d'architecture, runbooks pas-à-pas, playbooks Ansible,
-scripts PowerShell, modèles de configuration et outils de validation.
-
-## 👤 Pour qui ?
-
-- **Étudiants** — reproduire l'architecture en LAB sur 1 seul PC
-- **Techniciens** — déployer en PROD avec le runbook copier-coller
-- **Formateurs** — base pédagogique pour l'enseignement réseau/système
-
----
-
-## ⚡ Ce que ça déploie
+**Provisioning** via Terraform (VMs Proxmox + cloud-init) puis **configuration**
+via Ansible (durcissement, services, stack web).
 
 | Bloc | Technologies | Résultat |
 |:-----|:-------------|:---------|
@@ -40,96 +30,191 @@ scripts PowerShell, modèles de configuration et outils de validation.
 | 🖥️ Virtualisation | Proxmox VE 9.0 · 3 nœuds cluster | HA Manager, RTO < 90 s, NFS v4.2 |
 | 🔐 Identité | Samba AD (2 DC) · Kerberos · AGDLP | Tiering Tier-0/1/2, ~150 comptes |
 | 📂 Fichiers | Windows Server 2022 Core (FS01) | 7 partages SMB 3.1.1, RBAC NTFS |
-| 📧 Messagerie | Mailcow Dockerized | Postfix+Dovecot+SOGo+Rspamd (15 conteneurs) |
+| 📧 Messagerie | Mailcow Dockerized | Postfix+Dovecot+SOGo+Rspamd |
 | 📡 Supervision | Checkmk Raw 2.4 | 12 hôtes, agents TLS |
 | 💾 Sauvegarde | PBS v3 (VLAN isolé) | AES-256-GCM, ZSTD, dédup 70-90 % |
 | 🌐 Site web | NGINX + WordPress + MariaDB | Architecture 3-tiers, `/wp-admin` filtré |
 
 ---
 
-## 🚀 Deux parcours de déploiement
+## 🚀 Démarrage rapide
 
-### 🧪 LAB — un seul PC (≈ 4 h)
-
-> Tout sur **1 machine** avec Proxmox. Pas de HA réel, même architecture logique.
-
-```text
-Prérequis : 1 machine (16+ Go RAM, 256+ Go SSD), 1 carte réseau
-Résultat  : stack complète, VLANs virtuels (bridges), pas de cluster HA
+```bash
+git clone https://github.com/BUTINFO57/gaston-infra.git
+cd gaston-infra
 ```
 
-➡️ **[Commencer ici → docs/lab/overview.md](docs/lab/overview.md)**
-
-### 🏭 PROD — 3 serveurs (≈ 1 journée)
-
-> Déploiement conforme au runbook : 3 serveurs + switch + pfSense dédié.
-
-```text
-Prérequis : 3 serveurs, 1 PC pfSense (2 cartes réseau), 1 switch SG350-28
-Résultat  : cluster HA 3 nœuds, quorum natif, failover auto < 90 s
-```
-
-➡️ **[Commencer ici → docs/prod/overview.md](docs/prod/overview.md)**
+➡️ **[docs/quickstart.md](docs/quickstart.md)** — Guide complet de démarrage
 
 ---
 
-## 🗓️ Planning type J0 (PROD)
+## 🧪 Démarrer — LAB en 60 minutes
+
+> **1 seul PC/serveur** avec Proxmox VE ≥ 8.0 + template cloud-init Debian.
+> Même architecture logique que la PROD, sans HA.
+
+```bash
+# 1. Provisionner les VMs
+cd iac/terraform/lab
+cp terraform.tfvars.example terraform.tfvars    # ← éditer avec vos valeurs
+export PM_API_TOKEN_ID="terraform@pam!iac"
+export PM_API_TOKEN_SECRET="votre-token-secret"
+terraform init
+terraform plan -out=lab.tfplan
+terraform apply lab.tfplan
+
+# 2. Générer l'inventaire Ansible
+cd ../../..
+bash tools/tf-to-ansible-inventory.sh lab
+
+# 3. Configurer les services
+cd automation/ansible
+ansible-playbook -i inventories/lab.ini playbooks/base-linux.yml
+ansible-playbook -i inventories/lab.ini playbooks/hardening-min-j0.yml
+ansible-playbook -i inventories/lab.ini playbooks/mariadb.yml
+ansible-playbook -i inventories/lab.ini playbooks/wordpress.yml
+ansible-playbook -i inventories/lab.ini playbooks/nginx-rp.yml
+```
+
+**Validation rapide :**
+
+```bash
+curl -k https://192.168.20.106          # → page WordPress
+ssh deploy@192.168.10.10                 # → connexion AD-DC01
+terraform -chdir=iac/terraform/lab output  # → IPs de toutes les VMs
+```
+
+➡️ **[Guide LAB complet](docs/quickstart.md#5-déploiement-lab-en-60-minutes)** · **[Lab overview](docs/lab/overview.md)**
+
+---
+
+## 🏭 Démarrer — PROD en 1 journée
+
+> 3 serveurs physiques + switch + pfSense dédié. Cluster HA 3 nœuds.
+
+```bash
+# 1. Provisionner les VMs sur le cluster
+cd iac/terraform/prod
+cp terraform.tfvars.example terraform.tfvars    # ← placement multi-nœuds
+terraform init
+terraform plan -out=prod.tfplan
+terraform apply prod.tfplan
+
+# 2. Configurer avec Ansible
+cd ../../../automation/ansible
+cp inventories/prod.ini.example inventories/prod.ini
+ansible-playbook -i inventories/prod.ini playbooks/base-linux.yml
+ansible-playbook -i inventories/prod.ini playbooks/hardening-min-j0.yml
+ansible-playbook -i inventories/prod.ini playbooks/mailcow.yml
+ansible-playbook -i inventories/prod.ini playbooks/checkmk-agent.yml
+ansible-playbook -i inventories/prod.ini playbooks/nginx-rp.yml
+ansible-playbook -i inventories/prod.ini playbooks/mariadb.yml
+ansible-playbook -i inventories/prod.ini playbooks/wordpress.yml
+```
+
+**Parties manuelles** (attendues — voir section dédiée ci-dessous) :
+
+| Service | Guide | Durée |
+|:--------|:------|:-----:|
+| pfSense (routage, FW, VPN) | [configs/pfsense/](configs/pfsense/) | 1 h 30 |
+| Samba AD (DC01 + DC02) | [configs/samba/](configs/samba/) | 1 h 15 |
+| FS01 Windows (partages SMB) | [automation/powershell/](automation/powershell/) | 30 min |
+| PBS (sauvegarde) | [docs/ops/backup.md](docs/ops/backup.md) | 30 min |
+
+➡️ **[Guide PROD](docs/prod/overview.md)** · **[Runbook J0](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)** · **[Day0 Runbook](docs/prod/day0-runbook.md)**
+
+---
+
+## 📋 Checklist déploiement J0
 
 | Heure | Bloc | Guide | Durée |
 |:-----:|:-----|:------|:-----:|
-| 08:00 | 🔀 Switch + pfSense | §4.1–4.2 | 1 h 30 |
-| 09:30 | 🖥️ Cluster Proxmox + NFS | §4.3 | 1 h 45 |
-| 11:15 | ⚡ **GO/NO-GO** | §3 | 15 min |
-| 11:30 | 🔐 Samba AD DC01+DC02 | §4.4 | 1 h 15 |
-| 12:45 | 📂📧 FS01 + Mailcow | §4.5 | 1 h 15 |
-| 14:00 | 📡💾 Checkmk + PBS | §4.6–4.7 | 1 h 20 |
-| 15:20 | 🌐 Web 3-tiers | §4.8 | 1 h 00 |
-| 16:20 | 🛡️ Sécurité J0 + recette | §5–6 | 1 h 00 |
-| 17:20 | ✅ **MVP opérationnel** | | |
-
-➡️ **[Runbook complet](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md)** · **[Checklist exécutive 20 min](runbooks/RUNBOOK-EXEC-20MIN.md)**
+| 08:00 | 🔀 Switch + pfSense | [§4.1–4.2](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#41-switch-cisco-sg350-28) | 1 h 30 |
+| 09:30 | 🖥️ Proxmox cluster + NFS | [§4.3](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#43-cluster-proxmox-ve) | 1 h 45 |
+| 11:15 | ⚡ **GO/NO-GO** | [§3](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#3-plan-dexécution-sur-1-journée) | 15 min |
+| 11:30 | 🔐 Samba AD | [§4.4](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#44-samba-ad-dc1--dc2) | 1 h 15 |
+| 12:45 | 📂📧 FS01 + Mailcow | [§4.5](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#45-services-socle) | 1 h 15 |
+| 14:00 | 📡💾 Checkmk + PBS | [§4.6–4.7](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#46-supervision--mon-01-checkmk) | 1 h 20 |
+| 15:20 | 🌐 Web 3-tiers | [§4.8](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#48-production-web--3-tiers) | 1 h 00 |
+| 16:20 | 🛡️ Sécurité + recette | [§5–6](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md#5-sécurité-minimale-j0) | 1 h 00 |
+| 17:20 | ✅ **MVP Opérationnel** | | |
 
 ---
 
-## 🗺️ Navigation rapide
+## 🏗️ Architecture IaC
 
-| Je veux… | Aller à |
-|:---------|:--------|
-| Comprendre l'architecture | [docs/architecture/diagrams.md](docs/architecture/diagrams.md) |
-| Voir le plan IP / VLANs | [docs/architecture/ip-plan.md](docs/architecture/ip-plan.md) |
-| Déployer en LAB (1 PC) | [docs/lab/overview.md](docs/lab/overview.md) |
-| Déployer en PROD (3 serveurs) | [docs/prod/overview.md](docs/prod/overview.md) |
-| Opérer (backup/monitoring/rollback) | [docs/ops/](docs/ops/) |
-| Lancer l'automatisation Ansible | [automation/ansible/README.md](automation/ansible/README.md) |
-| Voir les modèles de config | [configs/](configs/) |
-
----
+```text
+Terraform provisionne          Ansible configure
+┌──────────────────┐           ┌──────────────────┐
+│  iac/terraform/  │           │ automation/       │
+│  ├── modules/    │  ──────>  │  ansible/         │
+│  ├── lab/        │  outputs  │  ├── playbooks/   │
+│  └── prod/       │           │  ├── roles/       │
+└──────────────────┘           │  └── inventories/ │
+                               └──────────────────┘
+```
 
 ## 📂 Structure du dépôt
 
 ```text
 gaston-infra/
+├── iac/                           # Infrastructure as Code
+│   └── terraform/                 # Provisioning Proxmox
+│       ├── modules/               #   Modules réutilisables (vm, network, cloudinit)
+│       ├── lab/                   #   Environnement LAB mono-hôte
+│       └── prod/                  #   Environnement PROD multi-nœuds
+├── automation/                    # Configuration management
+│   ├── ansible/                   #   Playbooks, rôles, inventaires
+│   └── powershell/                #   Scripts FS01 (Windows)
+├── configs/                       # Templates de configuration
+│   ├── nginx/                     #   Reverse proxy NGINX
+│   ├── ufw/                       #   Règles pare-feu UFW
+│   ├── pfsense/                   #   Documentation pfSense
+│   └── samba/                     #   Provisionnement Samba AD
 ├── docs/                          # Documentation
-│   ├── quickstart.md              # Démarrer en 5 min
-│   ├── lab/                       # Guide LAB mono-hôte
-│   ├── prod/                      # Guide PROD 3 nœuds
-│   ├── ops/                       # Opérations (backup, monitoring, rollback)
-│   └── architecture/              # Diagrammes, plan IP, flux
-├── runbooks/                      # Runbooks exécutables
-│   ├── RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md
-│   └── RUNBOOK-EXEC-20MIN.md
-├── configs/                       # Modèles de configuration
-│   ├── nginx/                     # Reverse proxy NGINX
-│   ├── ufw/                       # Règles pare-feu UFW
-│   ├── pfsense/                   # Documentation pfSense
-│   └── samba/                     # Provisionnement Samba AD
-├── automation/                    # Automatisation du déploiement
-│   ├── ansible/                   # Playbooks et rôles Ansible
-│   └── powershell/                # Scripts PowerShell FS01
-├── tools/                         # Scripts de validation
-├── examples/                      # Fichiers d'exemple (sans secrets)
-└── .github/                       # CI/CD + modèles
+│   ├── quickstart.md              #   Démarrage rapide
+│   ├── lab/                       #   Guide LAB mono-hôte
+│   ├── prod/                      #   Guide PROD 3 nœuds
+│   ├── ops/                       #   Opérations (backup, monitoring, secrets)
+│   └── architecture/              #   Diagrammes, plan IP, flux
+├── runbooks/                      # Procédures exécutables
+├── tools/                         # Scripts de validation et utilitaires
+├── examples/                      # Fichiers exemples (sans secrets)
+├── Makefile                       # Cibles make (lint, deploy, validate)
+└── .github/                       # CI/CD GitHub Actions
 ```
+
+## 🔧 Commandes Make
+
+```bash
+make help              # Afficher toutes les cibles
+make lint              # Exécuter tous les linters
+make docs              # Valider liens et diagrammes Mermaid
+make lab-plan          # Planifier le déploiement LAB
+make lab-apply         # Appliquer le déploiement LAB
+make prod-plan         # Planifier le déploiement PROD
+make prod-apply        # Appliquer le déploiement PROD
+make validate          # Validation complète (lint + docs)
+```
+
+---
+
+## 🔧 Ce qui reste manuel et pourquoi
+
+Certains composants ne sont **pas** automatisés par Terraform/Ansible.
+C'est un choix de conception documenté (pas un oubli).
+
+| Composant | Raison | Référence |
+|:----------|:-------|:----------|
+| **pfSense** | Pas d'API Terraform fiable et stable. Config via WebUI + export XML. | [configs/pfsense/](configs/pfsense/) |
+| **Samba AD** | Provisionnement automatisable mais risque élevé. Scripts templates + exécution manuelle. | [configs/samba/](configs/samba/) |
+| **PBS** | Intégration PVE↔PBS partiellement manuelle selon l'infrastructure physique. | [docs/ops/backup.md](docs/ops/backup.md) |
+| **FS01 Windows** | Dépend d'un template sysprep (non généré automatiquement). Config via PowerShell post-deploy. | [automation/powershell/](automation/powershell/) |
+| **Switch SG350** | Configuration VLAN via WebUI Cisco. Pas d'API IaC standard. | [runbooks/](runbooks/) |
+| **Proxmox cluster** | Mise en cluster (pvecm) = opération manuelle unique sur chaque nœud. | [docs/prod/day0-runbook.md](docs/prod/day0-runbook.md) |
+
+> Les checklists et templates sont fournis pour chaque composant manuel.
+> L'objectif est la **reproductibilité documentée**, pas l'automatisation totale.
 
 ---
 
@@ -137,20 +222,20 @@ gaston-infra/
 
 Ce dépôt est **public**. Il ne contient **aucun** :
 
-- ❌ Mot de passe, clé API ou token réel
-- ❌ Identifiant de production ou IP publique
-- ❌ Donnée personnelle (noms, emails, téléphones)
+- mot de passe, clé API ou token réel
+- identifiant de production
+- donnée personnelle
 
-Toutes les valeurs sensibles utilisent des marqueurs `<PLACEHOLDER>` et des fichiers `.example`.
-Voir [SECURITY.md](SECURITY.md) pour la politique de sécurité.
+Tous les secrets utilisent des marqueurs `<PLACEHOLDER>` et des fichiers `.example`.
+Voir [SECURITY.md](SECURITY.md) et [docs/ops/secrets.md](docs/ops/secrets.md).
 
 ---
 
 ## 🤝 Contribuer
 
-Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les consignes.
+Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les conventions (Conventional Commits en français, règles PR).
 Ce projet suit le [Code de Conduite Contributor Covenant](CODE_OF_CONDUCT.md).
 
 ## 📜 Licence
 
-MIT — Voir [LICENSE](LICENSE) pour les détails.
+[MIT](LICENSE) — Voir [LICENSE](LICENSE) pour les détails.

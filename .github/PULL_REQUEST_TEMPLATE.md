@@ -9,6 +9,7 @@ Ferme #
 - [ ] 📝 Documentation
 - [ ] 🔧 Modèle de configuration
 - [ ] 🤖 Automatisation (Ansible/PowerShell)
+- [ ] 🏗️ Infrastructure as Code (Terraform)
 - [ ] 🐛 Correction de bug
 - [ ] ✨ Nouvelle fonctionnalité
 - [ ] 🔀 Refactorisation
@@ -17,12 +18,22 @@ Ferme #
 
 - [ ] Aucun secret ni identifiant réel commité
 - [ ] Tous les espaces réservés utilisent le format `<PLACEHOLDER>`
-- [ ] Le lint Markdown passe
-- [ ] Les liens sont valides
+- [ ] Le lint Markdown passe (`make lint-md`)
+- [ ] Les liens sont valides (`make docs`)
 - [ ] Les diagrammes Mermaid s'affichent correctement
-- [ ] Les éléments TODO suivent le format `TODO[XXX]`
-- [ ] Message de Conventional Commit utilisé
+- [ ] Terraform fmt/validate passe (`make lint-tf`)
+- [ ] Ansible-lint passe (`make lint-ansible`)
+- [ ] Les éléments TODO suivent le format `TODO[XXX]` et sont dans le registre
+- [ ] Message de Conventional Commit utilisé (en français)
 - [ ] CHANGELOG mis à jour (si modification visible par l'utilisateur)
+
+## Comment tester
+
+<!-- Commandes pour valider cette PR -->
+
+```bash
+make validate
+```
 
 ## Captures d'écran / Validation
 

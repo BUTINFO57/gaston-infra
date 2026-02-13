@@ -5,30 +5,39 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
-## [1.0.1] — 2026-02-09
-
-### Corrigé
-
-- Résolution des 6 TODO documentaires (owner GitHub, contact sécurité, PBS NIC, IPs PROD, GLPI OS, Auth Container LDAP)
-- Harmonisation des IPs PVE dans tous les inventaires (.11/.12/.50)
-- Ajout newline en fin de .markdownlint.yml (yamllint)
-- Nettoyage de la référence TODO[006] résiduelle dans openvpn.md
-
-### Amélioré
-
-- README.md réécrit intégralement en français (parcours LAB/PROD, badges, structure)
-- SECURITY.md : politique via GitHub Security Advisories
-- docs/quickstart.md : guide de démarrage rapide en français
-- docs/index.md : registre des décisions techniques + références configs
-- docs/lab/overview.md : checklist express 30 min, table des simulations
-- docs/lab/single-host-proxmox.md : URLs ISO réelles, config 16 Go RAM
-- docs/prod/day0-runbook.md : tableau de rollback par phase
-- docs/prod/validation.md : résultats attendus (pvecm, samba, docker, curl, HA)
+## [1.1.0] — 2026-02-13
 
 ### Ajouté
 
-- .markdownlint.yml, .markdownlint-cli2.jsonc, .yamllint.yml
-- 9 topics GitHub, 7 labels en français, protection branche main
+- **IaC Terraform** : provisioning Proxmox complet (modules `vm`, `network`, `cloudinit`)
+- Environnement LAB mono-hôte et PROD multi-nœuds avec cloud-init
+- Makefile avec cibles `lint`, `docs`, `lab-plan`, `lab-apply`, `prod-plan`, `prod-apply`
+- Script `tools/tf-to-ansible-inventory.sh` : génération d'inventaire Ansible depuis Terraform
+- CI renforcée : `terraform fmt/validate`, `ansible-lint`, `shellcheck`, job `policy`
+- Dependabot pour les GitHub Actions
+- Guide `docs/ops/secrets.md` : gestion des secrets en local
+- Documentation deploy-first : parcours LAB 60 min et PROD 1 journée
+- Section « Ce qui reste manuel et pourquoi » dans README et docs/prod/overview
+- Bloc exécutable « Comment déployer PROD » dans docs/prod/day0-runbook.md
+- Tableaux « Variables à fournir » dans iac/terraform/README.md et automation/ansible/README.md
+- Registre TODO enrichi (003–006 avec variable de paramétrage)
+- Compteur de fichiers : 73 → 107 fichiers (ajout IaC + templates + configs)
+
+### Modifié
+
+- README refondu : page d'accueil IaC avec badges, commandes copiables, architecture
+- README : sections « Démarrer LAB/PROD » avec commandes exactes et validation
+- SECURITY.md : signalement via GitHub Private Vulnerability Reporting (sans email inventé)
+- CONTRIBUTING.md : Conventional Commits en français, règles PR, commandes `make`
+- `.gitignore` : protection `*.tfstate`, `*.tfvars`, `.terraform/`
+- Quickstart aligné sur le parcours Terraform → Ansible
+- Badges README pointent vers `BUTINFO57/gaston-infra`
+- `.markdownlint.yml` : désactivation des règles de style non bloquantes (MD060, MD036, MD028, MD029, MD040)
+
+### Corrigé
+
+- Résolution du placeholder `TODO-OWNER` dans badges et quickstart
+- Résolution du `TODO[002]` (contact sécurité) via Private Vulnerability Reporting
 
 ## [1.0.0] — 2026-02-09
 
