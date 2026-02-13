@@ -1,6 +1,6 @@
 # 🏗️ gaston-infra
 
-<!-- markdownlint-disable MD033 MD041 -->
+<!-- markdownlint-disable MD033 MD036 MD041 -->
 <div align="center">
 
 ![Licence](https://img.shields.io/github/license/butinfoia-alt/gaston-infra?style=flat-square)

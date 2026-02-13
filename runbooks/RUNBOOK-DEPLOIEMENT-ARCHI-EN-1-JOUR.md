@@ -716,7 +716,7 @@ apt update && apt full-upgrade -y
 
 Éditer `/etc/network/interfaces` sur chaque nœud. Exemple PVE1 — adapter l'interface physique (`eno1`, `enp0s25`…) et l'IP :
 
-```
+```text
 auto lo
 iface lo inet loopback
 
@@ -1189,7 +1189,7 @@ cd mailcow-dockerized
 
 Vérifier `mailcow.conf` :
 
-```
+```ini
 MAILCOW_HOSTNAME=mail.gaston.local
 TZ=Europe/Paris
 SKIP_LETS_ENCRYPT=y
@@ -1849,7 +1849,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 08:00 – 09:00 — FONDATIONS
 
-```
+```text
 [ ] Switch SG350 : VLANs 10/20/30, trunks Gi1-Gi4, mgmt 192.168.10.2
 [ ] Proxmox VE 9 : Install PVE1 (.11), PVE2 (.12), PVE03 (.50)
 [ ] pfSense CE 24 : Install, WAN em0 DHCP, LAN em1 .10.1/24
@@ -1857,7 +1857,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 09:00 – 10:30 — RÉSEAU
 
-```
+```text
 [ ] pfSense : VLAN 20 (.20.1/24), VLAN 30 (.30.1/24)
 [ ] pfSense : DHCP x3, DNS Resolver + Override gaston.local
 [ ] pfSense : Aliases, Règles FW deny-default, NAT auto, VPN
@@ -1865,7 +1865,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 10:00 – 11:30 — CLUSTER
 
-```
+```text
 [ ] pvecm create gaston-cluster (PVE1)
 [ ] pvecm add (PVE2, PVE03)
 [ ] NFS /srv/nfs/ha, stockage ha-nfs
@@ -1874,14 +1874,14 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 12:00 — GO/NO-GO
 
-```
+```text
 [ ] Quorum 3/3   [ ] Ping VLAN 10↔20↔30   [ ] Internet OK
 [ ] DNS OK       [ ] NFS monté
 ```
 
 ### 12:15 – 14:00 — IDENTITÉ + SERVICES
 
-```
+```text
 [ ] AD-DC01 (.10) : provision, DNS, OU Tier-0/1/2, groupes
 [ ] AD-DC02 (.9) : join DC, réplication
 [ ] FS01 (.111) : join, 7 partages SMB, RBAC NTFS
@@ -1890,7 +1890,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 14:00 – 15:00 — MONITORING + BACKUP
 
-```
+```text
 [ ] MON-01 (.114) : Checkmk site gaston, 12 agents
 [ ] PBS (.100) : datastore 200 Go, intégration PVE
 [ ] PBS : 1 backup + 1 restore test
@@ -1898,7 +1898,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 15:00 – 16:30 — PRODUCTION WEB
 
-```
+```text
 [ ] maria-prod01 (.105) : MariaDB + base wordpress_db
 [ ] web-wp01 (.108) : Apache + PHP + WordPress
 [ ] rp-prod01 (.106) : NGINX RP + TLS + /wp-admin filtré
@@ -1907,7 +1907,7 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 
 ### 17:00 – 18:00 — SÉCURITÉ + RECETTE
 
-```
+```text
 [ ] Sécurité minimale J0 (§5)
 [ ] Checklist recette globale (§6)
 [ ] Export config pfSense XML + snapshots VMs
@@ -1938,7 +1938,6 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 | web-wp01 | web-wp01.gaston.local | .20.108 | 20 | Debian 12 | WordPress 6.x / Apache 2.4 / PHP 8.2+ | oui |
 
 > Les IPs des VMs PROD (VLAN 20) diffèrent selon les documents sources. Ce runbook utilise les IPs des règles pfSense (.105, .106, .108) comme référence autoritaire. L'Infrastructure Overview et le Budget donnent d'autres valeurs (TODO[006]).
-
 > PBS apparaît en `192.168.10.112` dans l'inventaire Checkmk (interface monitoring VLAN 10) et `192.168.30.100` dans son propre rapport (interface data VLAN 30). Si PBS n'a qu'une seule NIC, adapter la table et les règles FW (TODO[004]).
 
 ---

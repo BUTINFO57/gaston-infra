@@ -19,7 +19,7 @@
 | Gateway | `192.168.10.1` (sera pfSense) |
 | DNS | `192.168.10.1` (provisoire) |
 
-3. Post-install — désactiver le repo enterprise :
+1. Post-install — désactiver le repo enterprise :
 
 ```bash
 sed -i 's/^deb/# deb/' /etc/apt/sources.list.d/pve-enterprise.list

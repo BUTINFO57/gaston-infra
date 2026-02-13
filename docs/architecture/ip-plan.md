@@ -31,9 +31,7 @@
 | web-wp01 | web-wp01.gaston.local | `.20.108` | 20 | Debian 12 | WordPress 6.x / Apache 2.4 / PHP 8.2+ | ✅ |
 
 > **Décision :** IPs VLAN 20 = `.105` / `.106` / `.108` (alignées sur les règles pfSense en place)) comme référence autoritaire. | Où: docs/architecture/ip-plan.md | Attendu: Confirmation des IPs réelles | Exemple: `.105`, `.106`, `.108`
-
 > **Décision :** GLPI = Debian 12 + GLPI 10.0 (valeur estimée, non documentée dans les sources)
-
 > **Décision :** PBS = 1 NIC sur VLAN 30 (`192.168.30.100`). Le monitoring passe par le routage pfSense VLAN 30 → VLAN 10
 
 ## Ports trunk Switch SG350-28
