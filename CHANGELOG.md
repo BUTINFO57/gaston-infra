@@ -17,15 +17,22 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 - Dependabot pour les GitHub Actions
 - Guide `docs/ops/secrets.md` : gestion des secrets en local
 - Documentation deploy-first : parcours LAB 60 min et PROD 1 journée
+- Section « Ce qui reste manuel et pourquoi » dans README et docs/prod/overview
+- Bloc exécutable « Comment déployer PROD » dans docs/prod/day0-runbook.md
+- Tableaux « Variables à fournir » dans iac/terraform/README.md et automation/ansible/README.md
+- Registre TODO enrichi (003–006 avec variable de paramétrage)
+- Compteur de fichiers : 73 → 107 fichiers (ajout IaC + templates + configs)
 
 ### Modifié
 
 - README refondu : page d'accueil IaC avec badges, commandes copiables, architecture
+- README : sections « Démarrer LAB/PROD » avec commandes exactes et validation
 - SECURITY.md : signalement via GitHub Private Vulnerability Reporting (sans email inventé)
 - CONTRIBUTING.md : Conventional Commits en français, règles PR, commandes `make`
 - `.gitignore` : protection `*.tfstate`, `*.tfvars`, `.terraform/`
 - Quickstart aligné sur le parcours Terraform → Ansible
-- Badges README pointent vers `butinfoia-alt/gaston-infra`
+- Badges README pointent vers `BUTINFO57/gaston-infra`
+- `.markdownlint.yml` : désactivation des règles de style non bloquantes (MD060, MD036, MD028, MD029, MD040)
 
 ### Corrigé
 
