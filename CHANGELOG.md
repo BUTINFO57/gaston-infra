@@ -5,6 +5,37 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
+## [1.2.0] — 2026-02-15
+
+### Ajouté
+
+- Templates Ansible manquants : `wp-config.php.j2` (WordPress) et `nginx-rp.conf.j2` (reverse proxy)
+- Job `yamllint` global dans le workflow CI
+- Marqueurs `---` (document-start) dans tous les fichiers YAML
+
+### Corrigé
+
+- **IaC** : variables d'environnement provider `bpg/proxmox` corrigées (`PM_*` → `PROXMOX_VE_*`)
+- **CI** : suppression de `|| true` sur `shellcheck` (les erreurs étaient masquées)
+- **CI** : suppression du workflow `lint.yml` redondant (jobs déjà dans `ci.yml`)
+- **Outils** : bug sous-shell dans `validate-mermaid.sh` (compteur d'erreurs toujours à 0)
+- **Runbook** : résolution de tous les TODOs techniques (001–006)
+  - TODO[001] : communauté SNMP → `gaston_monitor`
+  - TODO[002] : Auth Container LDAP → `OU=CORPO,DC=gaston,DC=local`
+  - TODO[003] : URL Checkmk → version 2.4.0p5
+  - TODO[004] : PBS = 1 NIC sur VLAN 30 (`192.168.30.100`)
+  - TODO[005] : GLPI = Debian 12 + GLPI 9.5
+  - TODO[006] : IPs VLAN 20 = `.105/.106/.108` (conformes pfSense)
+- **Docs** : correction double `)` dans `ip-plan.md`, version GLPI 10.0 → 9.5
+- **Docs** : Auth Container OpenVPN aligné sur les rapports
+- **Docs** : suppression de la section anglaise « Git History Plan » dans `docs/index.md`
+
+### Modifié
+
+- Registres TODO mis à jour (tous ✅) dans `docs/index.md`, `iac/terraform/README.md`, `automation/ansible/README.md`
+- Badge README : suppression du badge `lint.yml` obsolète
+- Exemptions policy CI : ajout `.j2`, `RUNBOOK-`, `CONTRIBUTING`, `CHANGELOG`
+
 ## [1.1.0] — 2026-02-13
 
 ### Ajouté
