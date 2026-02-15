@@ -129,8 +129,7 @@ cp terraform.tfvars.example terraform.tfvars
 #   node_secours  = "pve03"
 #   ssh_public_keys = ["ssh-ed25519 AAAA..."]
 
-export PM_API_TOKEN_ID="terraform@pam!iac"
-export PM_API_TOKEN_SECRET="votre-token-secret"
+export PROXMOX_VE_API_TOKEN="terraform@pam!iac=votre-token-secret"
 
 terraform init
 terraform plan -out=prod.tfplan

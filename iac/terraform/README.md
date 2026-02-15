@@ -43,12 +43,12 @@ dans les fichiers `.tf` ou `.tfvars`.**
 ### Méthode recommandée : variables d'environnement
 
 ```bash
-export PM_API_URL="https://192.168.10.11:8006/api2/json"
-export PM_API_TOKEN_ID="terraform@pam!iac"
-export PM_API_TOKEN_SECRET="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# Le endpoint est défini dans terraform.tfvars (variable pm_api_url)
+# L'authentification se fait via variables d'environnement du provider bpg/proxmox :
+export PROXMOX_VE_API_TOKEN="terraform@pam!iac=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 # ou bien par utilisateur/mot de passe :
-# export PM_USER="root@pam"
-# export PM_PASS="votre-mot-de-passe"
+# export PROXMOX_VE_USERNAME="root@pam"
+# export PROXMOX_VE_PASSWORD="votre-mot-de-passe"
 ```
 
 ### Créer un token API dédié sur Proxmox
@@ -172,19 +172,19 @@ Mêmes variables que LAB, plus :
 | `node_infra` | Nœud VMs infrastructure | `pve2` | ❌ |
 | `node_secours` | Nœud secours + NFS | `pve03` | ❌ |
 
-> Les identifiants Proxmox (`PM_API_TOKEN_ID`, `PM_API_TOKEN_SECRET`)
+> Les identifiants Proxmox (`PROXMOX_VE_API_TOKEN`)
 > doivent être passés via variables d'environnement — **jamais dans `.tfvars`**.
 > Voir [docs/ops/secrets.md](../../docs/ops/secrets.md).
 
 ## TODOs liés à Terraform
 
-| TODO | Description | Impact |
+| TODO | Description | Statut |
 |:-----|:-----------|:-------|
-| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | Adresse PBS dans `main.tf` |
-| TODO[004] | IPs PROD VLAN 20 (retenues: .105/.106/.108) | Fixé dans `main.tf` |
-| TODO[005] | OS GLPI (Debian 12 supposé) | Template dans `prod/main.tf` |
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | ✅ Résolu — PBS = `192.168.30.100` (1 NIC VLAN 30) |
+| TODO[004] | IPs PROD VLAN 20 | ✅ Résolu — `.105/.106/.108` (conformes pfSense) |
+| TODO[005] | OS GLPI | ✅ Résolu — Debian 12 + GLPI 9.5 |
 
-> Ces TODOs ne bloquent **pas** le LAB minimal. Ils sont paramétrables
+> Tous les TODOs Terraform sont résolus. Les IPs sont paramétrables
 > via `terraform.tfvars` sans modifier le code.
 
 ## Liens

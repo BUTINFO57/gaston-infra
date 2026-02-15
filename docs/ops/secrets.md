@@ -51,8 +51,7 @@ Les identifiants Proxmox sont passés via **variables d'environnement** :
 
 ```bash
 # Option 1 : Token API (recommandé)
-export PM_API_TOKEN_ID="terraform@pam!iac"
-export PM_API_TOKEN_SECRET="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+export PROXMOX_VE_API_TOKEN="terraform@pam!iac=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 
 # Option 2 : Utilisateur / mot de passe
 export PM_USER="root@pam"
