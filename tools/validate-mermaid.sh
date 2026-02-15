@@ -11,7 +11,7 @@ TMPDIR=$(mktemp -d)
 ERRORS=0
 TOTAL=0
 
-# shellcheck disable=SC2329  # invoque indirectement via trap
+# shellcheck disable=SC2317,SC2329  # invoque indirectement via trap
 cleanup() { rm -rf "$TMPDIR"; }
 trap cleanup EXIT
 
@@ -47,7 +47,11 @@ for mmd_file in "$TMPDIR"/*.mmd; do
     else
         src_info="$base"
     fi
-    if mmdc -i "$mmd_file" -o "$TMPDIR/out.svg" 2>/dev/null; then
+    MMDC_ARGS=(-i "$mmd_file" -o "$TMPDIR/out.svg")
+    if [ -n "${PUPPETEER_CONFIG:-}" ]; then
+        MMDC_ARGS+=(--puppeteerConfigFile "$PUPPETEER_CONFIG")
+    fi
+    if mmdc "${MMDC_ARGS[@]}" 2>/dev/null; then
         echo "  ✅ ${src_info}"
     else
         echo "  ❌ ${src_info} — INVALIDE"

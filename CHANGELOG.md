@@ -17,6 +17,8 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 ### Corrigé
 
 - **IaC** : variables d'environnement provider `bpg/proxmox` corrigées (`PM_*` → `PROXMOX_VE_*`)
+- **CI** : lychee pinné sur `latest` (v0.21.0 obsolète)
+- **CI** : Puppeteer `--no-sandbox` pour mmdc en CI (Ubuntu)
 - **CI** : suppression de `|| true` sur `shellcheck` (les erreurs étaient masquées)
 - **CI** : suppression du workflow `lint.yml` redondant (jobs déjà dans `ci.yml`)
 - **Outils** : bug sous-shell dans `validate-mermaid.sh` (compteur d'erreurs toujours à 0)
