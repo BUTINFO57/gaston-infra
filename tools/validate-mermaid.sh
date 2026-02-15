@@ -51,7 +51,7 @@ for mmd_file in "$TMPDIR"/*.mmd; do
     if [ -n "${PUPPETEER_CONFIG:-}" ]; then
         MMDC_ARGS+=(--puppeteerConfigFile "$PUPPETEER_CONFIG")
     fi
-    if mmdc "${MMDC_ARGS[@]}" 2>/dev/null; then
+    if mmdc "${MMDC_ARGS[@]}" 2>"${MMDC_ERR:-/dev/null}"; then
         echo "  ✅ ${src_info}"
     else
         echo "  ❌ ${src_info} — INVALIDE"

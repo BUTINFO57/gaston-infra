@@ -57,11 +57,12 @@ jobs:
       - name: Install mmdc
         run: npm install -g @mermaid-js/mermaid-cli
       - name: Create Puppeteer config
-        run: echo '{"launch":{"args":["--no-sandbox","--disable-setuid-sandbox"]}}' > /tmp/puppeteer.json
+        run: echo '{"args":["--no-sandbox","--disable-setuid-sandbox"]}' > /tmp/puppeteer.json
       - name: Validate Mermaid diagrams
         run: bash tools/validate-mermaid.sh
         env:
           PUPPETEER_CONFIG: /tmp/puppeteer.json
+          MMDC_ERR: /dev/stderr
 
   terraform-validate:
     name: Terraform Validate
