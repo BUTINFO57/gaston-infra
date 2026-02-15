@@ -1,0 +1,59 @@
+<?php
+/**
+ * Configuration WordPress — Les Saveurs de Gaston
+ * Généré par Ansible — ne pas modifier manuellement sur le serveur.
+ * Source : automation/ansible/playbooks/wordpress.yml
+ *
+ * @package WordPress
+ */
+
+// ** Réglages MySQL ** //
+define( 'DB_NAME',     '{{ wp_db_name }}' );
+define( 'DB_USER',     '{{ wp_db_user }}' );
+define( 'DB_PASSWORD', '{{ wp_db_pass }}' );
+define( 'DB_HOST',     '{{ wp_db_host }}' );
+define( 'DB_CHARSET',  'utf8mb4' );
+define( 'DB_COLLATE',  '' );
+
+/**
+ * Clés uniques d'authentification et salage.
+ * Générer des valeurs uniques : https://api.wordpress.org/secret-key/1.1/salt/
+ */
+define( 'AUTH_KEY',         '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'SECURE_AUTH_KEY',  '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'LOGGED_IN_KEY',    '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'NONCE_KEY',        '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'AUTH_SALT',        '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'SECURE_AUTH_SALT', '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'LOGGED_IN_SALT',   '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+define( 'NONCE_SALT',       '{{ lookup("password", "/dev/null chars=ascii_letters,digits length=64") }}' );
+
+/**
+ * Préfixe de table.
+ */
+$table_prefix = 'wp_';
+
+/**
+ * Mode débogage — désactivé en production.
+ */
+define( 'WP_DEBUG', false );
+
+/**
+ * Forcer HTTPS (derrière le reverse proxy NGINX).
+ */
+if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
+    $_SERVER['HTTPS'] = 'on';
+}
+define( 'WP_HOME',    '{{ wp_site_url }}' );
+define( 'WP_SITEURL', '{{ wp_site_url }}' );
+
+/**
+ * Sécurité supplémentaire.
+ */
+define( 'DISALLOW_FILE_EDIT', true );
+
+/* C'est tout, ne touchez pas à ce qui suit ! Bonne publication. */
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', __DIR__ . '/' );
+}
+require_once ABSPATH . 'wp-settings.php';

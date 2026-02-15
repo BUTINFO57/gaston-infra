@@ -103,10 +103,10 @@ Ce sont des choix de conception délibérés — les appliances avec WebUI sont 
 
 ## TODOs liés à Ansible
 
-| TODO | Description | Impact |
+| TODO | Description | Statut |
 |:-----|:-----------|:-------|
-| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | Variable `monitoring_host` dans inventaire |
-| TODO[006] | Auth LDAP pfSense VPN | Variable `ldap_server` dans rôles si ajouté |
+| TODO[003] | IP monitoring PBS (VLAN 10 vs 30) | ✅ Résolu — PBS = `192.168.30.100` (1 NIC VLAN 30) |
+| TODO[006] | Auth LDAP pfSense VPN | ✅ Résolu — `OU=CORPO,DC=gaston,DC=local` |
 
-> Ces TODOs ne bloquent **pas** le LAB minimal. Les valeurs par défaut
+> Tous les TODOs Ansible sont résolus. Les valeurs par défaut
 > dans `roles/*/defaults/main.yml` sont fonctionnelles.

@@ -5,7 +5,6 @@
 
 ![License](https://img.shields.io/github/license/BUTINFO57/gaston-infra?style=flat-square)
 ![CI](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/ci.yml?label=CI&style=flat-square)
-![Lint](https://img.shields.io/github/actions/workflow/status/BUTINFO57/gaston-infra/lint.yml?label=lint&style=flat-square)
 
 **Infrastructure as Code — Les Saveurs de Gaston (LAB + PROD)**
 
@@ -57,8 +56,7 @@ cd gaston-infra
 # 1. Provisionner les VMs
 cd iac/terraform/lab
 cp terraform.tfvars.example terraform.tfvars    # ← éditer avec vos valeurs
-export PM_API_TOKEN_ID="terraform@pam!iac"
-export PM_API_TOKEN_SECRET="votre-token-secret"
+export PROXMOX_VE_API_TOKEN="terraform@pam!iac=votre-token-secret"
 terraform init
 terraform plan -out=lab.tfplan
 terraform apply lab.tfplan

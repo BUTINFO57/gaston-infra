@@ -38,7 +38,7 @@ lint-md: ## Linter les fichiers Markdown
 
 .PHONY: lint-sh
 lint-sh: ## Vérifier les scripts shell avec shellcheck
-	shellcheck tools/*.sh iac/terraform/scripts/*.sh || true
+	shellcheck tools/*.sh iac/terraform/scripts/*.sh
 
 # ---------------------------------------------------------------------------
 # Documentation

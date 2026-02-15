@@ -81,8 +81,7 @@ cp terraform.tfvars.example terraform.tfvars
 # Éditer terraform.tfvars : pm_api_url, pm_node, ssh_public_keys
 
 # Exporter les identifiants Proxmox
-export PM_API_TOKEN_ID="terraform@pam!iac"
-export PM_API_TOKEN_SECRET="votre-token-secret"
+export PROXMOX_VE_API_TOKEN="terraform@pam!iac=votre-token-secret"
 
 terraform init
 terraform plan -out=lab.tfplan

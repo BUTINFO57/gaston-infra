@@ -52,4 +52,10 @@ build/
 
 ## Rendered docs
 site/
+PR-BODY.md
 pr-body.md
+
+## Rapports source (jamais committer)
+LES SAVEURS DE GASTON/
+AUDIT-REPORT.md
+truth-table*.md

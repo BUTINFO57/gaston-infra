@@ -17,10 +17,9 @@ provider "proxmox" {
   endpoint = var.pm_api_url
   insecure = true
 
-  # Authentification via variables d'environnement :
-  #   PM_API_TOKEN_ID     = "terraform@pam!iac"
-  #   PM_API_TOKEN_SECRET = "xxxxx"
-  # ou
-  #   PM_USER = "root@pam"
-  #   PM_PASS = "xxxxx"
+  # Authentification via variables d'environnement (provider bpg/proxmox) :
+  #   PROXMOX_VE_API_TOKEN = "terraform@pam!iac=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  # ou :
+  #   PROXMOX_VE_USERNAME = "root@pam"
+  #   PROXMOX_VE_PASSWORD = "xxxxx"
 }
