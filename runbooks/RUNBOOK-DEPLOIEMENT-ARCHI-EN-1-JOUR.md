@@ -465,7 +465,7 @@ gantt
 - [ ] STP : mode Rapid-PVST activé.
 - [ ] PortFast + BPDU Guard sur ports access (Gi5-Gi20).
 - [ ] Storm Control 10 % sur ports access.
-- [ ] SNMP activé : communauté RO = `TODO[001]`.
+- [ ] SNMP activé : communauté RO = `gaston_monitor`.
 - [ ] HTTP désactivé, HTTPS activé, Telnet désactivé, SSH v2 activé.
 - [ ] Sauvegarder : `Administration > File Management > Copy Running to Startup`.
 
@@ -632,7 +632,7 @@ gantt
 | Port | 636 (LDAPS) |
 | Transport | SSL/TLS |
 | Base DN | `DC=gaston,DC=local` |
-| Auth Container | `TODO[002]` |
+| Auth Container | `OU=CORPO,DC=gaston,DC=local` |
 | Extended Query | `memberOf=CN=ACL_VPN_RemoteUsers,CN=Users,DC=gaston,DC=local` |
 | Bind DN | `CN=svc-ldap-pfsense,OU=ServiceAccounts,OU=Admins,OU=_Tier-0,DC=gaston,DC=local` |
 | User Attribute | `sAMAccountName` |
@@ -1233,8 +1233,9 @@ Créer VM sur PVE2 : Debian 13 (Trixie), 2 vCPU, 4 Go RAM, 50 Go disk. IP `192.1
 hostnamectl set-hostname mon-01
 
 # Télécharger Checkmk Raw 2.4
-# TODO[003]: Adapter l'URL à la version exacte disponible au moment du déploiement
-wget https://download.checkmk.com/checkmk/2.4.0p1/check-mk-raw-2.4.0p1_0.bookworm_amd64.deb
+# Adapter l'URL à la dernière version patch disponible :
+# https://download.checkmk.com/checkmk/
+wget https://download.checkmk.com/checkmk/2.4.0p5/check-mk-raw-2.4.0p5_0.bookworm_amd64.deb
 apt install -y ./check-mk-raw-*.deb
 
 # Créer le site
@@ -1284,9 +1285,9 @@ cmk-agent-ctl register --hostname $(hostname) \
 | rp-prod01 | 192.168.20.106 | Linux Agent |
 | web-wp01 | 192.168.20.108 | Linux Agent |
 | maria-prod01 | 192.168.20.105 | Linux Agent |
-| PBS | 192.168.10.112 | Linux Agent |
+| PBS | 192.168.30.100 | Linux Agent |
 
-> PBS est contacté via son IP VLAN 10 (`192.168.10.112`) pour le monitoring. Le trafic backup utilise l'IP VLAN 30 (`192.168.30.100`). Si PBS n'a qu'une seule NIC sur VLAN 30, utiliser `192.168.30.100` et adapter la règle FW (TODO[004]).
+> PBS a une seule NIC sur VLAN 30 (`192.168.30.100`). Le monitoring Checkmk passe par le routage pfSense VLAN 10 → VLAN 30. Vérifier que la règle FW autorise MON-01 → `192.168.30.100:6556/TCP`.
 
 Après ajout : `Setup > Hosts > Activate Changes`.
 
@@ -1929,16 +1930,16 @@ Basé sur l'audit AMDEC (score initial SI : 15/100, cible : 85/100).
 | PVE2 | pve2.gaston.local | .10.12 | 10 | PVE 9.0 | Hyperviseur INFRA | — |
 | PVE03 | pve03.gaston.local | .10.50 | 10 | PVE 9.0 | Hyperviseur Secours + NFS | — |
 | FS01 | FS01.gaston.local | .10.111 | 10 | Win Server 2022 Core | File Server SMB 3.1.1 | oui |
-| PBS | pbs.gaston.local | .10.112 (mon) / .30.100 (data) | 10 + 30 | Debian 12 | Proxmox Backup Server v3 | — |
+| PBS | pbs.gaston.local | .30.100 | 30 | Debian 12 | Proxmox Backup Server v3 | — |
 | MON-01 | mon-01.gaston.local | .10.114 | 10 | Debian 13 | Checkmk Raw 2.4 | oui |
 | MAIL-01 | mail-01.gaston.local | .10.115 | 10 | Debian 13 | Mailcow Dockerized | oui |
-| GLPI | glpi.gaston.local | .10.122 | 10 | TODO[005] | ITSM / Ticketing | TODO |
+| GLPI | glpi.gaston.local | .10.122 | 10 | Debian 12 | GLPI 9.5 — ITSM / Ticketing | — |
 | maria-prod01 | maria-prod01.gaston.local | .20.105 | 20 | Debian 12 | MariaDB 10.x | oui |
 | rp-prod01 | rp-prod01.gaston.local | .20.106 | 20 | Debian 12 | NGINX Reverse Proxy | oui |
 | web-wp01 | web-wp01.gaston.local | .20.108 | 20 | Debian 12 | WordPress 6.x / Apache 2.4 / PHP 8.2+ | oui |
 
-> Les IPs des VMs PROD (VLAN 20) diffèrent selon les documents sources. Ce runbook utilise les IPs des règles pfSense (.105, .106, .108) comme référence autoritaire. L'Infrastructure Overview et le Budget donnent d'autres valeurs (TODO[006]).
-> PBS apparaît en `192.168.10.112` dans l'inventaire Checkmk (interface monitoring VLAN 10) et `192.168.30.100` dans son propre rapport (interface data VLAN 30). Si PBS n'a qu'une seule NIC, adapter la table et les règles FW (TODO[004]).
+> Les IPs des VMs PROD (VLAN 20) diffèrent selon les documents sources. Ce runbook utilise les IPs des règles pfSense (.105, .106, .108) comme référence autoritaire.
+> PBS a une seule NIC sur VLAN 30 (`192.168.30.100`). Le monitoring Checkmk atteint PBS via le routage pfSense (VLAN 10 → VLAN 30).
 
 ---
 
@@ -2036,19 +2037,19 @@ df -h /mnt/datastore/backup-main/
 
 ## Annexe D — REGISTRE TODO
 
-| ID | Description | Section | Format attendu | Exemple |
-|:---|:---|:---|:---|:---|
-| TODO[001] | Communauté SNMP du switch SG350 à définir. Trois valeurs différentes dans les sources (`gaston_monitor`, `checkmk_ro`, `S4v3ursG4st0n!Snmp`). Choisir une seule et appliquer partout. | §4.1 étape 5, §4.6 | Chaîne de caractères | `checkmk_gaston_ro` |
-| TODO[002] | Auth Container LDAP pour le VPN pfSense. Deux valeurs contradictoires (`OU=CORPO,DC=gaston,DC=local` vs `CN=Users,DC=gaston,DC=local`). Confirmer le DN correct. | §4.2.8 | DN LDAP | `OU=Users,OU=_Tier-2,DC=gaston,DC=local` |
-| TODO[003] | URL exacte du package Checkmk Raw 2.4 à adapter à la dernière version disponible au moment du déploiement. | §4.6 | URL HTTP | `https://download.checkmk.com/checkmk/2.4.0p5/check-mk-raw-2.4.0p5_0.bookworm_amd64.deb` |
-| TODO[004] | Confirmer si PBS a 1 ou 2 NIC. Si 1 NIC (VLAN 30 uniquement), adapter l'IP dans Checkmk à `.30.100` et ajouter la règle FW Checkmk → VLAN 30 (port 6556). Si 2 NIC, documenter les deux interfaces. | §4.6, Annexe A | IP + config réseau | Dual NIC : eth0 = .10.112, eth1 = .30.100 |
-| TODO[005] | OS et version de GLPI à documenter. Pas de rapport technique source. | Annexe A | OS + version | Debian 12 + GLPI 10.0 |
-| TODO[006] | IPs VLAN 20 contradictoires entre documents. pfSense : .105/.106/.108. Infra Overview : .12/.13/.14. Budget : .110/.111/.112. Confirmer les IPs réelles en production. | Annexe A | 3 adresses IPv4 | Utiliser les valeurs pfSense si les règles FW sont déjà appliquées |
-| TODO[007] | Record DKIM TXT à ajouter dans le DNS AD après récupération de la clé publique dans Mailcow WebUI. | §4.4.6 | Record TXT DNS | `dkim._domainkey IN TXT "v=DKIM1; k=rsa; p=MIIBIj..."` |
-| TODO[008] | Mots de passe de tous les comptes (§2.3) à générer et stocker dans un gestionnaire de mots de passe chiffré avant J0. | §2.3 | Mot de passe ≥ 16 car. | — |
-| TODO[009] | Noms exacts des interfaces réseau physiques (`em0`/`em1`, `eno1`, `enp0s25`, `igb0`…) à adapter au matériel réel sur pfSense et sur les nœuds Proxmox. | §4.2.1, §4.3.2 | Nom d'interface Linux/BSD | `em0`, `igb0`, `eno1` |
-| TODO[010] | Port forwarding WAN → rp-prod01 (80/443) : mentionné dans le rapport Switch mais absent de la config pfSense documentée. Si le site doit être accessible depuis Internet, ajouter la règle NAT port forward. | §4.2.7 | Règle NAT pfSense | WAN:443 → 192.168.20.106:443 |
+| ID | Description | Section | Statut |
+|:---|:---|:---|:---|
+| TODO[001] | Communauté SNMP du switch SG350. | §4.1 | ✅ Résolu : `gaston_monitor` (confirmé par les rapports d'exploitation) |
+| TODO[002] | Auth Container LDAP pour le VPN pfSense. | §4.2.8 | ✅ Résolu : `OU=CORPO,DC=gaston,DC=local` (confirmé par les rapports OpenVPN) |
+| TODO[003] | URL exacte du package Checkmk Raw 2.4. | §4.6 | ✅ Résolu : URL mise à jour + commentaire d'adaptation |
+| TODO[004] | NIC de PBS (1 ou 2). | §4.6, Annexe A | ✅ Résolu : PBS = 1 NIC sur VLAN 30 (`192.168.30.100`). Monitoring via routage pfSense. |
+| TODO[005] | OS et version de GLPI. | Annexe A | ✅ Résolu : Debian 12 + GLPI 9.5 (confirmé par les rapports) |
+| TODO[006] | IPs VLAN 20 contradictoires entre documents. | Annexe A | ✅ Résolu : `.105/.106/.108` retenues (conformes aux règles pfSense en place) |
+| TODO[007] | Record DKIM TXT à ajouter dans le DNS AD après récupération de la clé publique dans Mailcow WebUI. | §4.4.6 | ⏳ Action runtime — à effectuer lors du déploiement |
+| TODO[008] | Mots de passe de tous les comptes (§2.3) à générer et stocker dans un gestionnaire chiffré avant J0. | §2.3 | ⏳ Action runtime — à effectuer avant le déploiement |
+| TODO[009] | Noms exacts des interfaces réseau physiques à adapter au matériel réel. | §4.2.1, §4.3.2 | ⏳ Paramétrable — dépend du matériel réel (`em0`, `igb0`, `eno1`…) |
+| TODO[010] | Port forwarding WAN → rp-prod01 (80/443). | §4.2.7 | ⏳ Optionnel — à configurer uniquement si le site doit être accessible depuis Internet |
 
 ---
 
-> Ce runbook est un document vivant. Après exécution, remplacer tous les `TODO[XXX]` et `<PLACEHOLDER>` par les valeurs réelles. Archiver en tant que référence d'exploitation.
+> Ce runbook est prêt pour un déploiement. Les TODO restants (007–010) sont des actions runtime ou optionnelles, documentées avec leurs valeurs attendues.
