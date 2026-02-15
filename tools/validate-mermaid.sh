@@ -18,9 +18,8 @@ echo "=== Validation des diagrammes Mermaid ==="
 echo "Répertoire : $DIR"
 echo ""
 
-# Find all .md files
+# Extraire tous les blocs Mermaid dans des fichiers .mmd individuels
 while IFS= read -r -d '' file; do
-    # Extract mermaid blocks
     awk '/^```mermaid$/,/^```$/' "$file" | grep -v '```' > /dev/null 2>&1 || continue
 
     BLOCK=0
@@ -28,23 +27,35 @@ while IFS= read -r -d '' file; do
     while IFS= read -r line; do
         if [ "$line" = "---BLOCK_END---" ]; then
             BLOCK=$((BLOCK + 1))
-            TOTAL=$((TOTAL + 1))
-            MMD_FILE="$TMPDIR/$(basename "$file" .md)_${BLOCK}.mmd"
-            # Validate with mmdc
-            if mmdc -i "$MMD_FILE" -o "$TMPDIR/out.svg" 2>/dev/null; then
-                echo "  ✅ $file — bloc $BLOCK"
-            else
-                echo "  ❌ $file — bloc $BLOCK — INVALIDE"
-                ERRORS=$((ERRORS + 1))
-            fi
+            # Écrire un marqueur indiquant le fichier source et le numéro de bloc
+            echo "${file}::${BLOCK}" > "$TMPDIR/meta_$(basename "$file" .md)_${BLOCK}.txt"
         else
-            MMD_FILE="$TMPDIR/$(basename "$file" .md)_$((BLOCK + 1)).mmd"
-            echo "$line" >> "$MMD_FILE"
+            echo "$line" >> "$TMPDIR/$(basename "$file" .md)_$((BLOCK + 1)).mmd"
         fi
     done
 done < <(find "$DIR" -name "*.md" -print0)
 
+# Valider chaque fichier .mmd extrait (pas de sous-shell → compteurs conservés)
+for mmd_file in "$TMPDIR"/*.mmd; do
+    [ -f "$mmd_file" ] || continue
+    TOTAL=$((TOTAL + 1))
+    base="$(basename "$mmd_file" .mmd)"
+    meta="$TMPDIR/meta_${base}.txt"
+    if [ -f "$meta" ]; then
+        src_info="$(cat "$meta")"
+    else
+        src_info="$base"
+    fi
+    if mmdc -i "$mmd_file" -o "$TMPDIR/out.svg" 2>/dev/null; then
+        echo "  ✅ ${src_info}"
+    else
+        echo "  ❌ ${src_info} — INVALIDE"
+        ERRORS=$((ERRORS + 1))
+    fi
+done
+
 echo ""
+echo "Total : ${TOTAL} diagramme(s) vérifié(s)"
 if [ "$ERRORS" -gt 0 ]; then
     echo "❌ $ERRORS erreur(s) trouvée(s)"
     exit 1
