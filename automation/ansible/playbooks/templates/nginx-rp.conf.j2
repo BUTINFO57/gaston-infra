@@ -1,0 +1,84 @@
+# =============================================================================
+# Reverse Proxy NGINX — Les Saveurs de Gaston
+# Généré par Ansible — ne pas modifier manuellement sur le serveur.
+# Source : automation/ansible/playbooks/nginx-rp.yml
+# Réf.   : configs/nginx/rp-prod01.conf.template
+# =============================================================================
+
+# Limitation de débit sur wp-login.php
+limit_req_zone $binary_remote_addr zone=wp_login:10m rate=5r/m;
+
+# Redirection HTTP → HTTPS
+server {
+    listen 80;
+    server_name {{ site_domain }};
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name {{ site_domain }};
+
+    # --- TLS ---
+    ssl_certificate     {{ ssl_cert_path }};
+    ssl_certificate_key {{ ssl_key_path }};
+    ssl_protocols       TLSv1.2 TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+    ssl_session_cache   shared:SSL:10m;
+    ssl_session_timeout 10m;
+
+    # --- En-têtes de sécurité ---
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options           "SAMEORIGIN"                         always;
+    add_header X-Content-Type-Options    "nosniff"                            always;
+    add_header Referrer-Policy           "strict-origin-when-cross-origin"    always;
+
+    # --- Proxy vers WordPress (web-wp01 Apache :80) ---
+    location / {
+        proxy_pass         http://{{ wordpress_host }}:80;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_read_timeout 90s;
+    }
+
+    # --- Restriction /wp-admin : VLAN Admin + VPN uniquement ---
+    location /wp-admin {
+        allow {{ admin_network }};
+        allow {{ vpn_network }};
+        deny  all;
+
+        proxy_pass         http://{{ wordpress_host }}:80;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    # --- Rate-limit sur wp-login.php ---
+    location = /wp-login.php {
+        limit_req zone=wp_login burst=3 nodelay;
+
+        allow {{ admin_network }};
+        allow {{ vpn_network }};
+        deny  all;
+
+        proxy_pass         http://{{ wordpress_host }}:80;
+        proxy_set_header   Host              $host;
+        proxy_set_header   X-Real-IP         $remote_addr;
+        proxy_set_header   X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+    }
+
+    # --- Interdire l'accès aux fichiers sensibles ---
+    location ~* /\.(git|env|htaccess|htpasswd) {
+        deny all;
+        return 404;
+    }
+
+    # --- Logs ---
+    access_log /var/log/nginx/gaston_access.log;
+    error_log  /var/log/nginx/gaston_error.log;
+}
