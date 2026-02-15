@@ -5,6 +5,16 @@ Toutes les modifications notables de ce projet sont documentées dans ce fichier
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
+## [1.3.0] — 2026-02-15
+
+### Ajouté
+
+- **Docs** : `docs/ops/STATUS.md` — statut officiel « Dépôt Terminé » avec périmètre, SemVer et procédure de release
+- **Docs** : `docs/ops/COMPATIBILITE.md` — matrice OS, CLI, provider Terraform et limites LAB/PROD
+- **Docs** : `docs/ops/MAINTENANCE.md` — convention de branches, commits, PR, merge, tags et anti-secrets
+- **README** : section « 📌 Statut du dépôt — Terminé (v1.3.0) » avec liens vers les docs OPS
+- **GitHub** : label `iac`, topics (iac, proxmox, pfsense, ansible, terraform, homelab, infrastructure, runbook)
+
 ## [1.2.0] — 2026-02-15
 
 ### Ajouté
