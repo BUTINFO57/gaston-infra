@@ -43,6 +43,10 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
 ## [1.1.0] — 2026-02-13
 
+> **Note** : les changements v1.1.0 ont été développés sur la branche
+> `chore/iac-perfection` (PR #5) et mergés dans `main` sans tag dédié.
+> Le tag `v1.1.0` a été créé rétroactivement lors de l'audit final v1.2.1.
+
 ### Ajouté
 
 - **IaC Terraform** : provisioning Proxmox complet (modules `vm`, `network`, `cloudinit`)
@@ -74,6 +78,18 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 
 - Résolution du placeholder `TODO-OWNER` dans badges et quickstart
 - Résolution du `TODO[002]` (contact sécurité) via Private Vulnerability Reporting
+
+## [1.0.1] — 2026-02-09
+
+### Corrigé
+
+- README refondu en français avec chemins LAB/PROD/OPS
+- Résolution des TODO[001–006] et harmonisation des IPs
+- Configurations markdownlint et yamllint ajoutées à la CI
+- Correction newline en fin de `.markdownlint.yml` (yamllint)
+- Registre des décisions et références de configuration ajoutés à `docs/index.md`
+- Guide LAB mono-hôte enrichi
+- Guide rollback PROD enrichi avec bloc et résultats attendus
 
 ## [1.0.0] — 2026-02-09
 

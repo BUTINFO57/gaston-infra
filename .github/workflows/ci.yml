@@ -142,12 +142,16 @@ jobs:
             | grep -v 'PULL_REQUEST_TEMPLATE.md' \
             | grep -v 'RUNBOOK-' \
             | grep -v 'CHANGELOG.md' \
+            | grep -v 'playbooks/.*\.yml' \
+            | grep -v 'configs/' \
+            | grep -v 'docs/ops/' \
             || true)
           if [ -n "$FOUND" ]; then
-            echo "⚠️  Placeholders trouvés (vérification informative) :"
+            echo "❌ Placeholders non autorisés trouvés :"
             echo "$FOUND"
             echo ""
             echo "Les fichiers .example, .template, .j2, runbooks et docs de sécurité sont exemptés."
+            exit 1
           else
             echo "✅ Aucun placeholder non autorisé"
           fi
