@@ -12,6 +12,7 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 - Templates Ansible manquants : `wp-config.php.j2` (WordPress) et `nginx-rp.conf.j2` (reverse proxy)
 - Job `yamllint` global dans le workflow CI
 - Marqueurs `---` (document-start) dans tous les fichiers YAML
+- Fichiers `.terraform.lock.hcl` (lab + prod) pour reproductibilité des builds
 
 ### Corrigé
 
@@ -29,6 +30,8 @@ et ce projet adhère au [Versionnage Sémantique](https://semver.org/lang/fr/).
 - **Docs** : correction double `)` dans `ip-plan.md`, version GLPI 10.0 → 9.5
 - **Docs** : Auth Container OpenVPN aligné sur les rapports
 - **Docs** : suppression de la section anglaise « Git History Plan » dans `docs/index.md`
+- **Shell** : SC2329 (`cleanup` via trap) et SC2001 (parameter expansion `${1%%/*}` au lieu de `sed`)
+- **Git** : `.gitignore` renforcé — exclusion des rapports source et artefacts de travail
 
 ### Modifié
 

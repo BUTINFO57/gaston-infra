@@ -11,6 +11,7 @@ TMPDIR=$(mktemp -d)
 ERRORS=0
 TOTAL=0
 
+# shellcheck disable=SC2329  # invoque indirectement via trap
 cleanup() { rm -rf "$TMPDIR"; }
 trap cleanup EXIT
 

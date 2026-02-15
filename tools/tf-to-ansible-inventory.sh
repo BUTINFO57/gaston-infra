@@ -32,7 +32,7 @@ VM_IPS=$(terraform -chdir="$TF_DIR" output -json vm_ips 2>/dev/null) || {
 
 # Extraire les IPs (retirer le masque CIDR)
 strip_cidr() {
-  echo "$1" | sed 's|/[0-9]*||'
+  echo "${1%%/*}"
 }
 
 AD_DC01=$(strip_cidr "$(echo "$VM_IPS" | python3 -c "import sys,json; print(json.load(sys.stdin)['ad_dc01'])")")
