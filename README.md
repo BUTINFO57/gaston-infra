@@ -234,6 +234,21 @@ Voir [SECURITY.md](SECURITY.md) et [docs/ops/secrets.md](docs/ops/secrets.md).
 Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les conventions (Conventional Commits en français, règles PR).
 Ce projet suit le [Code de Conduite Contributor Covenant](CODE_OF_CONDUCT.md).
 
+---
+
+## 📌 Statut du dépôt — Terminé (v1.3.0)
+
+Ce dépôt est **finalisé**. L'infrastructure est complète, documentée et
+déployable en LAB (60 min) et en PROD (1 journée).
+
+| Document | Contenu |
+|----------|---------|
+| [Statut du dépôt](docs/ops/STATUS.md) | État, périmètre, versionnage, gates CI |
+| [Compatibilité](docs/ops/COMPATIBILITE.md) | OS, dépendances CLI, limites LAB/PROD |
+| [Maintenance](docs/ops/MAINTENANCE.md) | Branches, commits, PR, releases, anti-secrets |
+| [Démarrage rapide](docs/quickstart.md) | Guide complet de prise en main |
+| [Runbook J0](runbooks/RUNBOOK-DEPLOIEMENT-ARCHI-EN-1-JOUR.md) | Déploiement PROD en 1 journée |
+
 ## 📜 Licence
 
 [MIT](LICENSE) — Voir [LICENSE](LICENSE) pour les détails.
